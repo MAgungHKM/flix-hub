@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Flix Hub</string>
+    <string name="movie">Movie Title</string>
+    <string name="tv_show">Tv Shows</string>
+    <string name="genres">Genre 1, Genre 2, Genre 3</string>
+    <string name="directed_by">Directed By</string>
+    <string name="director">Movie\'s Director</string>
+    <string name="release_date">Release Date</string>
+    <string name="date">February 29, 2020</string>
+    <string name="text_quote">If you truly desire greatness, you must first know what makes you weak!</string>
+    <string name="nice_score">69%</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="text_placeholder">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.></string>
+    <string name="share_title">Share this movie now.</string>
+    <string name="share_tv_show">Let\'s check %s out! \nhttps://www.themoviedb.org/tv/%s</string>
+    <string name="share_movie">Let\'s check %s out! \nhttps://www.themoviedb.org/movie/%s</string>
+</resources>
