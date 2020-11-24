@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.hkm.flixhub.R
 import com.hkm.flixhub.databinding.FragmentDetailBinding
-import com.hkm.flixhub.entity.ShowEntity
+import com.hkm.flixhub.data.ShowEntity
 import com.hkm.flixhub.utils.OnMyFragmentListener
 
 class DetailFragment : Fragment() {

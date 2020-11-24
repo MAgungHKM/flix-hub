@@ -1,4 +1,4 @@
-package com.hkm.flixhub.entity
+package com.hkm.flixhub.data
 
 data class ShowEntity(
     val showId: String,

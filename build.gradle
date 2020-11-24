@@ -14,6 +14,9 @@ buildscript {
         androidXLegacy = '1.0.0'
         robolectric = '4.4'
 
+        retrofitVersion = '2.9.0'
+        okhttp3Version = '4.9.0'
+
         materialVersion = '1.2.1'
         recyclerViewVersion = '1.1.0'
         glideVersion = '4.11.0'

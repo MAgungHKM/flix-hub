@@ -1,7 +1,7 @@
 package com.hkm.flixhub.utils
 
 import com.hkm.flixhub.R
-import com.hkm.flixhub.entity.ShowEntity
+import com.hkm.flixhub.data.ShowEntity
 
 object DataDummy {
 

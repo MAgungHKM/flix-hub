@@ -61,6 +61,10 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$androidXNavigation"
     implementation "androidx.legacy:legacy-support-v4:$androidXLegacy"
 
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3Version"
+
     //testing
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "junit:junit:$junitVersion"

@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.hkm.flixhub.R
 import com.hkm.flixhub.databinding.ItemsTvShowBinding
-import com.hkm.flixhub.entity.ShowEntity
+import com.hkm.flixhub.data.ShowEntity
 
 class TvShowAdapter : RecyclerView.Adapter<TvShowAdapter.TvShowViewHolder>() {
     private lateinit var onClickListener: OnClickListener

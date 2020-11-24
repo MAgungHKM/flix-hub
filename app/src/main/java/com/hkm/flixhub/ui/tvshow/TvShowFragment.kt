@@ -12,7 +12,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.hkm.flixhub.adapter.TvShowAdapter
 import com.hkm.flixhub.databinding.FragmentTvShowBinding
-import com.hkm.flixhub.entity.ShowEntity
+import com.hkm.flixhub.data.ShowEntity
 import com.hkm.flixhub.ui.detail.DetailFragment
 import com.hkm.flixhub.ui.home.HomeFragmentDirections
 import com.hkm.flixhub.utils.OnMyFragmentListener

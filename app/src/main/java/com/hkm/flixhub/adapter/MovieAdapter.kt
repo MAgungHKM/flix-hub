@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.hkm.flixhub.R
 import com.hkm.flixhub.databinding.ItemsMovieBinding
-import com.hkm.flixhub.entity.ShowEntity
+import com.hkm.flixhub.data.ShowEntity
 
 class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
     private lateinit var onClickListener: OnClickListener
