@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.hkm.flixhub.R
+import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.databinding.ItemsMovieBinding
-import com.hkm.flixhub.data.ShowEntity
 
 class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
     private lateinit var onClickListener: OnClickListener
@@ -43,7 +43,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
                 tvMovieName.text = movie.title
                 root.setOnClickListener { onClickListener.onClick(movie) }
                 Glide.with(root.context)
-                    .load(movie.imagePath)
+                    .load(movie.posterPath)
                     .apply(
                         RequestOptions
                             .placeholderOf(R.drawable.ic_loading)

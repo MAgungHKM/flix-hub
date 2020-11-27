@@ -16,7 +16,10 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.hkm.flixhub.KoinTestRunner"
+
+        buildConfigField("String", "API_KEY", MyTMDbAPIKey)
     }
 
     buildTypes {
@@ -61,19 +64,54 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$androidXNavigation"
     implementation "androidx.legacy:legacy-support-v4:$androidXLegacy"
 
+    //api
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3Version"
 
+    //dependency injection
+    implementation "org.koin:koin-core:$koinVersion"
+    implementation "org.koin:koin-androidx-viewmodel:$koinVersion"
+
+    //idling resource
+    implementation "androidx.test.espresso:espresso-idling-resource:$idleResourceVersion"
+
+    //debug
+    debugImplementation ("androidx.fragment:fragment-testing:$fragmentVersion") {
+        [new Tuple('androidx.test', 'monitor'),
+         new Tuple('androidx.test', 'runner'),
+         new Tuple('androidx.test', 'rules'),
+         new Tuple('androidx.test' , 'core')].each {
+            exclude group: "${it.get(0)}", module: "${it.get(1)}"
+        }
+    }
+
     //testing
-    testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "junit:junit:$junitVersion"
+    // robolectric will stay in this version until further notices from the GitHub
+    // https://github.com/mockk/mockk/issues/522
     testImplementation "org.robolectric:robolectric:$robolectric"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation ("org.koin:koin-test:$koinVersion") { exclude group: 'org.mockito'}
+    testImplementation "com.agoda.kakao:kakao:$kakaoVersion"
+    testImplementation "io.mockk:mockk:$mockkVersion"
+    testImplementation "androidx.arch.core:core-testing:$archCoreTestingVersion"
+    testImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    testImplementation "androidx.test:runner:$androidTestCoreVersion"
+    testImplementation "androidx.test:core:$androidTestCoreVersion"
+    testImplementation "androidx.test:rules:$androidTestCoreVersion"
+    testImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestVersion"
+
+    androidTestImplementation ("org.koin:koin-test:$koinVersion") { exclude group: 'org.mockito'}
+    androidTestImplementation "com.agoda.kakao:kakao:$kakaoVersion"
+    androidTestImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
     androidTestImplementation "androidx.test.ext:junit-ktx:$androidXTestVersion"
     androidTestImplementation "androidx.navigation:navigation-testing:$androidXNavigation"
 
     //architecture component
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
 }

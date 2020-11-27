@@ -1,20 +1,21 @@
 package com.hkm.flixhub.ui.detail
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.hkm.flixhub.R
+import com.hkm.flixhub.data.source.local.entity.DetailShowEntity
 import com.hkm.flixhub.databinding.FragmentDetailBinding
-import com.hkm.flixhub.data.ShowEntity
-import com.hkm.flixhub.utils.OnMyFragmentListener
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailFragment : Fragment() {
     companion object {
@@ -22,25 +23,21 @@ class DetailFragment : Fragment() {
         const val TYPE_TV_SHOW = "tv_show"
     }
 
-    private lateinit var mOnMyFragmentListener: OnMyFragmentListener
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding as FragmentDetailBinding
     private val mDetailFragmentArgs: DetailFragmentArgs by navArgs()
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnMyFragmentListener) {
-            mOnMyFragmentListener = context
-        } else {
-            throw RuntimeException(
-                "$context must implement OnFragmentInteractionListener"
-            )
-        }
+    // Lazy Inject ViewModel
+    private val viewModel: DetailViewModel by viewModel()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
@@ -50,13 +47,11 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (activity != null) {
-            mOnMyFragmentListener.onChangeToolbarDisplayHome(true)
-            mOnMyFragmentListener.onChangeToolbarTitle(mDetailFragmentArgs.showTitle)
+            (activity as AppCompatActivity).supportActionBar?.title = mDetailFragmentArgs.showTitle
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-            val viewModel = ViewModelProvider(
-                this,
-                ViewModelProvider.NewInstanceFactory()
-            )[DetailViewModel::class.java]
+            binding.progressBarDetail.visibility = View.VISIBLE
+
             val showId = mDetailFragmentArgs.showId
             if (showId != null)
                 viewModel.setSelectedShow(showId)
@@ -65,23 +60,50 @@ class DetailFragment : Fragment() {
             if (showType != null)
                 viewModel.setSelectedShowType(showType)
 
-            val show = viewModel.getShow()
-            populateView(show)
+            viewModel.getShowDetail().observe(viewLifecycleOwner, { detail ->
+                with(detail) {
+                    if (errorMessage != "null")
+                        Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
+                            .show()
+                }
+
+                if (detail.director == "null" && detail.errorMessage == "null") {
+                    binding.textDirected.visibility = View.GONE
+                    binding.tvDirector.visibility = View.GONE
+                }
+
+                if (detail.quote == "null") {
+                    binding.tvQuote.visibility = View.GONE
+                }
+
+                binding.progressBarDetail.visibility = View.GONE
+                populateView(detail)
+            })
         }
     }
 
-    private fun populateView(show: ShowEntity) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                (activity as AppCompatActivity).onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun populateView(detail: DetailShowEntity) {
         with(binding) {
-            tvTitle.text = show.title
-            tvDate.text = show.releaseDate
-            tvDirector.text = show.director
-            tvGenre.text = show.genre
-            tvQuote.text = show.quote
-            tvScore.text = show.score
-            tvSynopsis.text = show.synopsis
+            tvTitle.text = detail.title
+            tvDate.text = detail.releaseDate
+            tvDirector.text = detail.director
+            tvGenre.text = detail.genre
+            tvQuote.text = detail.quote
+            tvScore.text = detail.score
+            tvSynopsis.text = detail.synopsis
 
             Glide.with(this@DetailFragment)
-                .load(show.imagePath)
+                .load(detail.posterPath)
                 .apply(
                     RequestOptions
                         .placeholderOf(R.drawable.ic_loading)
@@ -92,7 +114,7 @@ class DetailFragment : Fragment() {
             imgPoster.clipToOutline = true
 
             Glide.with(this@DetailFragment)
-                .load(show.imagePath)
+                .load(detail.bannerPath)
                 .apply(
                     RequestOptions
                         .placeholderOf(R.drawable.ic_loading)
@@ -102,10 +124,9 @@ class DetailFragment : Fragment() {
                 .into(imgBanner)
             imgBanner.clipToOutline = true
 
-            iconShare.setOnClickListener { setOnClickShare(show.title, show.showId) }
+            iconShare.setOnClickListener { setOnClickShare(detail.title, detail.showId) }
         }
     }
-
 
     private fun setOnClickShare(title: String, showId: String) {
         val mimeType = "text/plain"

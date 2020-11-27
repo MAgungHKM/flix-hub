@@ -1,10 +1,11 @@
 package com.hkm.flixhub.ui.movie
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.hkm.flixhub.data.ShowEntity
-import com.hkm.flixhub.utils.DataDummy
+import com.hkm.flixhub.data.source.ShowRepository
+import com.hkm.flixhub.data.source.local.entity.ShowEntity
 
-class MovieViewModel : ViewModel() {
+class MovieViewModel(private val showRepository: ShowRepository) : ViewModel() {
 
-    fun getMovies(): ArrayList<ShowEntity> = DataDummy.generateDummyMovies()
+    fun getMovies(): LiveData<ArrayList<ShowEntity>> = showRepository.getAllMovies()
 }
