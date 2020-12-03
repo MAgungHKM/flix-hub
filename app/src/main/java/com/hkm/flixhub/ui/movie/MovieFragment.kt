@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.hkm.flixhub.adapter.MovieAdapter
 import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.databinding.FragmentMovieBinding
@@ -38,21 +37,21 @@ class MovieFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
             movieAdapter = MovieAdapter()
-            movieAdapter.stateRestorationPolicy =
-                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
             binding.progressBarMovie.visibility = View.VISIBLE
 
             viewModel.getMovies().observe(viewLifecycleOwner, { movies ->
-                with(movies[0]) {
-                    if (errorMessage != "null")
-                        Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
-                            .show()
-                }
+                if (movies.isNotEmpty()) {
+                    with(movies[0]) {
+                        if (errorMessage != "null")
+                            Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
+                                .show()
+                    }
 
-                binding.progressBarMovie.visibility = View.GONE
-                movieAdapter.setMovies(movies)
-                setItemOnClickListener()
-                movieAdapter.notifyDataSetChanged()
+                    binding.progressBarMovie.visibility = View.GONE
+                    movieAdapter.setMovies(movies)
+                    setItemOnClickListener()
+                    movieAdapter.notifyDataSetChanged()
+                }
             })
 
             with(binding.rvMovie) {

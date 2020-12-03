@@ -8,6 +8,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.hkm.flixhub.R
 import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.databinding.ItemsTvShowBinding
+import com.hkm.flixhub.ui.detail.DetailFragment
 
 class TvShowAdapter : RecyclerView.Adapter<TvShowAdapter.TvShowViewHolder>() {
     private lateinit var onClickListener: OnClickListener
@@ -48,7 +49,8 @@ class TvShowAdapter : RecyclerView.Adapter<TvShowAdapter.TvShowViewHolder>() {
                         RequestOptions
                             .placeholderOf(R.drawable.ic_loading)
                             .error(R.drawable.ic_error)
-                            .override(250, 500)
+                            .override(DetailFragment.IMG_POSTER_WIDTH,
+                                DetailFragment.IMG_POSTER_HEIGHT)
                     )
                     .into(imgTvShow)
                 imgTvShow.clipToOutline = true

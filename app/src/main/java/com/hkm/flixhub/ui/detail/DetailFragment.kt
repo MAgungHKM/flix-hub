@@ -21,6 +21,10 @@ class DetailFragment : Fragment() {
     companion object {
         const val TYPE_MOVIE = "movie"
         const val TYPE_TV_SHOW = "tv_show"
+        const val IMG_POSTER_WIDTH = 250
+        const val IMG_POSTER_HEIGHT = 500
+        const val IMG_BANNER_WIDTH = 500
+        const val IMG_BANNER_HEIGHT = 750
     }
 
     private var _binding: FragmentDetailBinding? = null
@@ -108,7 +112,7 @@ class DetailFragment : Fragment() {
                     RequestOptions
                         .placeholderOf(R.drawable.ic_loading)
                         .error(R.drawable.ic_error)
-                        .override(250, 500)
+                        .override(IMG_POSTER_WIDTH, IMG_POSTER_HEIGHT)
                 )
                 .into(imgPoster)
             imgPoster.clipToOutline = true
@@ -119,7 +123,7 @@ class DetailFragment : Fragment() {
                     RequestOptions
                         .placeholderOf(R.drawable.ic_loading)
                         .error(R.drawable.ic_error)
-                        .override(500, 750)
+                        .override(IMG_BANNER_WIDTH, IMG_BANNER_HEIGHT)
                 )
                 .into(imgBanner)
             imgBanner.clipToOutline = true
