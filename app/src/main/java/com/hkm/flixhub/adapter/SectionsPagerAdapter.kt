@@ -6,10 +6,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.hkm.flixhub.R
+import com.hkm.flixhub.ui.favorite.FavoriteFragment
+import com.hkm.flixhub.ui.favorite.movie.FavoriteMovieFragment
+import com.hkm.flixhub.ui.favorite.tvshow.FavoriteTvShowFragment
+import com.hkm.flixhub.ui.home.HomeFragment
 import com.hkm.flixhub.ui.movie.MovieFragment
 import com.hkm.flixhub.ui.tvshow.TvShowFragment
 
-class SectionsPagerAdapter(private val mContext: Context, fm: FragmentManager) :
+class SectionsPagerAdapter(
+    private val mTag: String,
+    private val mContext: Context,
+    fm: FragmentManager,
+) :
     FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     companion object {
@@ -18,9 +26,21 @@ class SectionsPagerAdapter(private val mContext: Context, fm: FragmentManager) :
     }
 
     override fun getItem(position: Int): Fragment =
-        when (position) {
-            0 -> MovieFragment()
-            1 -> TvShowFragment()
+        when (mTag) {
+            HomeFragment::class.java.simpleName -> {
+                when (position) {
+                    0 -> MovieFragment()
+                    1 -> TvShowFragment()
+                    else -> Fragment()
+                }
+            }
+            FavoriteFragment::class.java.simpleName -> {
+                when (position) {
+                    0 -> FavoriteMovieFragment()
+                    1 -> FavoriteTvShowFragment()
+                    else -> Fragment()
+                }
+            }
             else -> Fragment()
         }
 

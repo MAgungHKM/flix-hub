@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-parcelize'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -69,6 +70,13 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3Version"
 
+    //db
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+
+    //pagination
+    implementation "androidx.paging:paging-runtime-ktx:$pagingVersion"
+
     //dependency injection
     implementation "org.koin:koin-core:$koinVersion"
     implementation "org.koin:koin-androidx-viewmodel:$koinVersion"
@@ -102,6 +110,7 @@ dependencies {
     testImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     testImplementation "androidx.test.ext:junit-ktx:$androidXTestVersion"
 
+    //instrumental testing
     androidTestImplementation ("org.koin:koin-test:$koinVersion") { exclude group: 'org.mockito'}
     androidTestImplementation "com.agoda.kakao:kakao:$kakaoVersion"
     androidTestImplementation "junit:junit:$junitVersion"

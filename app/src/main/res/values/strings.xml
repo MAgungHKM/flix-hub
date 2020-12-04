@@ -16,4 +16,15 @@
     <string name="share_movie">Let\'s check %s out! \nhttps://www.themoviedb.org/movie/%s</string>
     <string name="error_message">Request Error %1$d, with status code: %2$d. %3$s</string>
     <string name="type_not_found_message">The type of entertainment you requested could not be found</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_favorite">Favorite</string>
+    <string name="menu_delete_all">Delete All Favorite</string>
+    <string name="no_favorite_movies">There are no movies in favorite list.</string>
+    <string name="no_favorite_tv_shows">There are no tv shows in favorite list.</string>
+    <string name="text_add_favorite">%s has been added to favorite list.</string>
+    <string name="text_remove_favorite">%s has been removed from favorite list.</string>
+    <string name="dialog_delete_title">Delete All Favorite</string>
+    <string name="dialog_delete_message">Are you sure you want to delete every %s from favorite?</string>
+    <string name="dialog_confirm_yes">YES</string>
+    <string name="dialog_confirm_no">NO</string>
 </resources>

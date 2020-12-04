@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hkm.flixhub.adapter.TvShowAdapter
 import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.databinding.FragmentTvShowBinding
-import com.hkm.flixhub.ui.detail.DetailFragment
 import com.hkm.flixhub.ui.home.HomeFragmentDirections
+import com.hkm.flixhub.utils.ShowType
+import com.hkm.flixhub.vo.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TvShowFragment : Fragment() {
@@ -38,27 +40,57 @@ class TvShowFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
             tvShowAdapter = TvShowAdapter()
-            tvShowAdapter.stateRestorationPolicy =
-                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
             binding.progressBarTvShow.visibility = View.VISIBLE
 
-            viewModel.getTvShows().observe(viewLifecycleOwner, { tvShows ->
-                with(tvShows[0]) {
-                    if (errorMessage != "null")
-                        Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
-                            .show()
-                }
+            viewModel.getPages().observe(viewLifecycleOwner, { page ->
+                viewModel.getTvShows(page).observe(viewLifecycleOwner, { tvShows ->
+                    if (tvShows != null) {
+                        when (tvShows.status) {
+                            Status.LOADING -> binding.progressBarTvShow.visibility = View.VISIBLE
+                            Status.SUCCESS -> {
+                                with(tvShows.data?.get(0)) {
+                                    if (this?.errorMessage != "null")
+                                        Toast.makeText(requireActivity(),
+                                            this?.errorMessage,
+                                            Toast.LENGTH_LONG)
+                                            .show()
+                                }
 
-                binding.progressBarTvShow.visibility = View.GONE
-                tvShowAdapter.setTvShows(tvShows)
-                setItemOnClickListener()
-                tvShowAdapter.notifyDataSetChanged()
+                                binding.progressBarTvShow.visibility = View.GONE
+                                tvShowAdapter.submitList(tvShows.data)
+                                setItemOnClickListener()
+                                tvShowAdapter.notifyDataSetChanged()
+                            }
+                            Status.ERROR -> {
+                                binding.progressBarTvShow.visibility = View.GONE
+                                Toast.makeText(context,
+                                    tvShows.data?.get(0)?.errorMessage,
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                })
             })
 
             with(binding.rvTvShow) {
                 val numOfColumn = if (getScreenWidth() < 1500) 2 else 4
                 layoutManager = GridLayoutManager(context, numOfColumn)
                 setHasFixedSize(true)
+
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        val layoutManager =
+                            LinearLayoutManager::class.java.cast(recyclerView.layoutManager) as LinearLayoutManager
+                        val totalItemCount = layoutManager.itemCount
+                        val lastVisible = layoutManager.findLastVisibleItemPosition()
+
+                        val endHasBeenReached = lastVisible + 1 >= totalItemCount
+                        if (totalItemCount > 0 && endHasBeenReached) {
+                            viewModel.nextPage()
+                        }
+                    }
+                })
+
                 adapter = tvShowAdapter
             }
         }
@@ -70,7 +102,7 @@ class TvShowFragment : Fragment() {
                 val toDetailFragment = HomeFragmentDirections.actionHomeFragmentToDetailFragment(
                     show.showId,
                     show.title,
-                    DetailFragment.TYPE_TV_SHOW
+                    ShowType.TYPE_TV_SHOW
                 )
                 view?.findNavController()?.navigate(toDetailFragment)
             }

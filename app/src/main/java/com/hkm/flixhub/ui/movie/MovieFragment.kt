@@ -9,12 +9,16 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.hkm.flixhub.adapter.MovieAdapter
 import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.databinding.FragmentMovieBinding
-import com.hkm.flixhub.ui.detail.DetailFragment
 import com.hkm.flixhub.ui.home.HomeFragmentDirections
+import com.hkm.flixhub.utils.ShowType
+import com.hkm.flixhub.vo.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class MovieFragment : Fragment() {
     private lateinit var movieAdapter: MovieAdapter
@@ -37,27 +41,57 @@ class MovieFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
             movieAdapter = MovieAdapter()
-            binding.progressBarMovie.visibility = View.VISIBLE
 
-            viewModel.getMovies().observe(viewLifecycleOwner, { movies ->
-                if (movies.isNotEmpty()) {
-                    with(movies[0]) {
-                        if (errorMessage != "null")
-                            Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
-                                .show()
+            viewModel.getPages().observe(viewLifecycleOwner, { page ->
+                viewModel.getMovies(page).observe(viewLifecycleOwner, { movies ->
+                    if (movies != null) {
+                        when (movies.status) {
+                            Status.LOADING -> binding.progressBarMovie.visibility = View.VISIBLE
+                            Status.SUCCESS -> {
+                                with(movies.data?.get(0)) {
+                                    if (this?.errorMessage != "null")
+                                        Toast.makeText(requireActivity(),
+                                            this?.errorMessage,
+                                            Toast.LENGTH_LONG)
+                                            .show()
+                                }
+
+                                binding.progressBarMovie.visibility = View.GONE
+                                movieAdapter.submitList(movies.data)
+                                setItemOnClickListener()
+                                movieAdapter.notifyDataSetChanged()
+                            }
+                            Status.ERROR -> {
+                                binding.progressBarMovie.visibility = View.GONE
+                                Toast.makeText(context,
+                                    movies.data?.get(0)?.errorMessage,
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
-
-                    binding.progressBarMovie.visibility = View.GONE
-                    movieAdapter.setMovies(movies)
-                    setItemOnClickListener()
-                    movieAdapter.notifyDataSetChanged()
-                }
+                })
             })
+
 
             with(binding.rvMovie) {
                 val numOfColumn = if (getScreenWidth() < 1500) 2 else 4
                 layoutManager = GridLayoutManager(context, numOfColumn)
                 setHasFixedSize(true)
+
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        val layoutManager =
+                            LinearLayoutManager::class.java.cast(recyclerView.layoutManager) as LinearLayoutManager
+                        val totalItemCount = layoutManager.itemCount
+                        val lastVisible = layoutManager.findLastVisibleItemPosition()
+
+                        val endHasBeenReached = lastVisible + 1 >= totalItemCount
+                        if (totalItemCount > 0 && endHasBeenReached) {
+                            viewModel.nextPage()
+                        }
+                    }
+                })
+
                 adapter = movieAdapter
             }
         }
@@ -69,7 +103,7 @@ class MovieFragment : Fragment() {
                 val toDetailFragment = HomeFragmentDirections.actionHomeFragmentToDetailFragment(
                     show.showId,
                     show.title,
-                    DetailFragment.TYPE_MOVIE
+                    ShowType.TYPE_MOVIE
                 )
 
                 view?.findNavController()?.navigate(toDetailFragment)

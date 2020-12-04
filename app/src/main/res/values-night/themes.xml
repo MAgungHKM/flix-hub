@@ -14,4 +14,11 @@
         <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">@color/gray</item>
     </style>
+
+    <style name="MyPopupMenu" parent="@style/Theme.MaterialComponents.DayNight.Dialog">
+        <item name="colorPrimary">@color/blue_300</item>
+        <item name="android:background">@color/gray</item>
+        <item name="android:textColor">@color/colorTextTertiary</item>
+        <item name="textColorAlertDialogListItem">@color/colorTextTertiary</item>
+    </style>
 </resources>

@@ -2,6 +2,8 @@ package com.hkm.flixhub.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -10,18 +12,24 @@ import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.databinding.ItemsMovieBinding
 import com.hkm.flixhub.ui.detail.DetailFragment
 
-class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
+class MovieAdapter : PagedListAdapter<ShowEntity, MovieAdapter.MovieViewHolder>(DIFF_CALLBACK) {
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ShowEntity>() {
+            override fun areItemsTheSame(oldItem: ShowEntity, newItem: ShowEntity): Boolean {
+                return oldItem.showId == newItem.showId
+            }
+
+            override fun areContentsTheSame(oldItem: ShowEntity, newItem: ShowEntity): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
+
     private lateinit var onClickListener: OnClickListener
-    private var listShows = ArrayList<ShowEntity>()
 
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
-    }
-
-    fun setMovies(shows: ArrayList<ShowEntity>?) {
-        if (shows.isNullOrEmpty()) return
-        listShows.clear()
-        listShows.addAll(shows)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -31,11 +39,11 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        val movie = listShows[position]
-        holder.bind(movie)
+        val movie = getItem(position)
+        if (movie != null) {
+            holder.bind(movie)
+        }
     }
-
-    override fun getItemCount(): Int = listShows.size
 
     inner class MovieViewHolder(private val itemBinding: ItemsMovieBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {

@@ -2,6 +2,8 @@ package com.hkm.flixhub.data.source.remote
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.hkm.flixhub.R
 import com.hkm.flixhub.api.ApiConfig
@@ -17,19 +19,19 @@ class RemoteDataSource constructor(private val context: Context) {
         private val TAG = RemoteDataSource::class.java.simpleName
     }
 
-    fun getAllMovie(callback: LoadMoviesCallback) {
+    fun getAllMovie(page: String): LiveData<ApiResponse<MovieDiscoveryResponse>> {
         EspressoIdlingResource.increment()
-        lateinit var movieDiscoveryResponse: MovieDiscoveryResponse
-        val client = ApiConfig.getApiService().getMovieDiscovery()
+        val movieDiscoveryResponse = MutableLiveData<ApiResponse<MovieDiscoveryResponse>>()
+        val client = ApiConfig.getApiService().getMovieDiscovery(page = page)
         client.enqueue(object : Callback<MovieDiscoveryResponse> {
             override fun onResponse(
                 call: Call<MovieDiscoveryResponse>,
                 response: Response<MovieDiscoveryResponse>,
             ) {
-                if (response.isSuccessful) {
-                    movieDiscoveryResponse = response.body() as MovieDiscoveryResponse
-                    callback.onAllMoviesReceived(movieDiscoveryResponse)
-                } else {
+                if (response.isSuccessful)
+                    movieDiscoveryResponse.value =
+                        ApiResponse.success(response.body() as MovieDiscoveryResponse)
+                else {
                     val errorResponse = Gson().fromJson(response.errorBody()?.charStream(),
                         ErrorResponse::class.java)
                     val msg = context.getString(R.string.error_message,
@@ -37,7 +39,12 @@ class RemoteDataSource constructor(private val context: Context) {
                         errorResponse.statusCode,
                         errorResponse.statusMessage)
                     Log.e(TAG, msg)
-                    callback.onErrorReceived(msg)
+                    val errorDiscoveryResponse = MovieDiscoveryResponse(
+                        listOf(),
+                        errorResponse.statusMessage,
+                        errorResponse.statusCode,
+                        errorResponse.success)
+                    movieDiscoveryResponse.value = ApiResponse.error(msg, errorDiscoveryResponse)
                 }
                 EspressoIdlingResource.decrement()
             }
@@ -47,20 +54,21 @@ class RemoteDataSource constructor(private val context: Context) {
                 EspressoIdlingResource.decrement()
             }
         })
+        return movieDiscoveryResponse
     }
 
-    fun getAllTvShow(callback: LoadTvShowsCallback) {
+    fun getAllTvShow(page: String): LiveData<ApiResponse<TvShowDiscoveryResponse>> {
         EspressoIdlingResource.increment()
-        lateinit var tvShowDiscoveryResponse: TvShowDiscoveryResponse
-        val client = ApiConfig.getApiService().getTvShowDiscovery()
+        val tvShowDiscoveryResponse = MutableLiveData<ApiResponse<TvShowDiscoveryResponse>>()
+        val client = ApiConfig.getApiService().getTvShowDiscovery(page = page)
         client.enqueue(object : Callback<TvShowDiscoveryResponse> {
             override fun onResponse(
                 call: Call<TvShowDiscoveryResponse>,
                 response: Response<TvShowDiscoveryResponse>,
             ) {
                 if (response.isSuccessful) {
-                    tvShowDiscoveryResponse = response.body() as TvShowDiscoveryResponse
-                    callback.onAllTvShowsReceived(tvShowDiscoveryResponse)
+                    tvShowDiscoveryResponse.value =
+                        ApiResponse.success(response.body() as TvShowDiscoveryResponse)
                 } else {
                     val errorResponse = Gson().fromJson(response.errorBody()?.charStream(),
                         ErrorResponse::class.java)
@@ -69,7 +77,12 @@ class RemoteDataSource constructor(private val context: Context) {
                         errorResponse.statusCode,
                         errorResponse.statusMessage)
                     Log.e(TAG, msg)
-                    callback.onErrorReceived(msg)
+                    val errorDiscoveryResponse = TvShowDiscoveryResponse(
+                        listOf(),
+                        errorResponse.statusMessage,
+                        errorResponse.statusCode,
+                        errorResponse.success)
+                    tvShowDiscoveryResponse.value = ApiResponse.error(msg, errorDiscoveryResponse)
                 }
                 EspressoIdlingResource.decrement()
             }
@@ -79,12 +92,12 @@ class RemoteDataSource constructor(private val context: Context) {
                 EspressoIdlingResource.decrement()
             }
         })
+        return tvShowDiscoveryResponse
     }
 
-    fun getMovieDetail(id: String, callback: LoadMovieDetailCallback) {
+    fun getMovieDetail(id: String): LiveData<ApiResponse<MovieDetailResponse>> {
         EspressoIdlingResource.increment()
-        lateinit var movieDetailResponse: MovieDetailResponse
-        lateinit var movieCreditsResponse: MovieCreditsResponse
+        val movieDetailResponse = MutableLiveData<ApiResponse<MovieDetailResponse>>()
         val client = ApiConfig.getApiService().getMovieDetail(id)
         client.enqueue(object : Callback<MovieDetailResponse> {
             override fun onResponse(
@@ -93,7 +106,7 @@ class RemoteDataSource constructor(private val context: Context) {
             ) {
                 if (response.isSuccessful) {
                     EspressoIdlingResource.increment()
-                    movieDetailResponse = response.body() as MovieDetailResponse
+                    val detailResponse = response.body() as MovieDetailResponse
                     val client2 = ApiConfig.getApiService().getMovieCredits(id)
                     client2.enqueue(object : Callback<MovieCreditsResponse> {
                         override fun onResponse(
@@ -101,9 +114,9 @@ class RemoteDataSource constructor(private val context: Context) {
                             response: Response<MovieCreditsResponse>,
                         ) {
                             if (response.isSuccessful) {
-                                movieCreditsResponse = response.body() as MovieCreditsResponse
-                                callback.onMovieCreditsReceived(movieCreditsResponse)
-                                callback.onMovieDetailReceived(movieDetailResponse)
+                                val list = (response.body() as MovieCreditsResponse).crew
+                                detailResponse.crew = list
+                                movieDetailResponse.value = ApiResponse.success(detailResponse)
                             } else {
                                 val errorResponse =
                                     Gson().fromJson(response.errorBody()?.charStream(),
@@ -114,7 +127,22 @@ class RemoteDataSource constructor(private val context: Context) {
                                         errorResponse.statusCode,
                                         errorResponse.statusMessage)
                                 Log.e(TAG, msg)
-                                callback.onErrorReceived(msg)
+                                val errorDetailResponse = MovieDetailResponse(
+                                    "null",
+                                    "null",
+                                    "null",
+                                    listOf(),
+                                    -1.0,
+                                    -1,
+                                    "null",
+                                    "null",
+                                    "null",
+                                    arrayListOf(),
+                                    errorResponse.statusMessage,
+                                    errorResponse.statusCode,
+                                    errorResponse.success)
+                                movieDetailResponse.value =
+                                    ApiResponse.error(msg, errorDetailResponse)
                             }
                             EspressoIdlingResource.decrement()
                         }
@@ -132,7 +160,21 @@ class RemoteDataSource constructor(private val context: Context) {
                         errorResponse.statusCode,
                         errorResponse.statusMessage)
                     Log.e(TAG, msg)
-                    callback.onErrorReceived(msg)
+                    val errorDetailResponse = MovieDetailResponse(
+                        "null",
+                        "null",
+                        "null",
+                        listOf(),
+                        -1.0,
+                        -1,
+                        "null",
+                        "null",
+                        "null",
+                        arrayListOf(),
+                        errorResponse.statusMessage,
+                        errorResponse.statusCode,
+                        errorResponse.success)
+                    movieDetailResponse.value = ApiResponse.error(msg, errorDetailResponse)
                 }
                 EspressoIdlingResource.decrement()
             }
@@ -142,21 +184,22 @@ class RemoteDataSource constructor(private val context: Context) {
                 EspressoIdlingResource.decrement()
             }
         })
+        return movieDetailResponse
     }
 
-    fun getTvShowDetail(id: String, callback: LoadTvShowDetailCallback) {
+    fun getTvShowDetail(id: String): LiveData<ApiResponse<TvShowDetailResponse>> {
         EspressoIdlingResource.increment()
-        lateinit var tvShowDetailResponse: TvShowDetailResponse
+        val tvShowDetailResponse = MutableLiveData<ApiResponse<TvShowDetailResponse>>()
         val client = ApiConfig.getApiService().getTvShowDetail(id)
         client.enqueue(object : Callback<TvShowDetailResponse> {
             override fun onResponse(
                 call: Call<TvShowDetailResponse>,
                 response: Response<TvShowDetailResponse>,
             ) {
-                if (response.isSuccessful) {
-                    tvShowDetailResponse = response.body() as TvShowDetailResponse
-                    callback.onTvShowDetailReceived(tvShowDetailResponse)
-                } else {
+                if (response.isSuccessful)
+                    tvShowDetailResponse.value =
+                        ApiResponse.success(response.body() as TvShowDetailResponse)
+                else {
                     val errorResponse = Gson().fromJson(response.errorBody()?.charStream(),
                         ErrorResponse::class.java)
                     val msg = context.getString(R.string.error_message,
@@ -164,7 +207,21 @@ class RemoteDataSource constructor(private val context: Context) {
                         errorResponse.statusCode,
                         errorResponse.statusMessage)
                     Log.e(TAG, msg)
-                    callback.onErrorReceived(msg)
+                    val errorDetailResponse = TvShowDetailResponse(
+                        "null",
+                        "null",
+                        "null",
+                        listOf(),
+                        -1.0,
+                        "null",
+                        "null",
+                        -1,
+                        listOf(),
+                        "null",
+                        errorResponse.statusMessage,
+                        errorResponse.statusCode,
+                        errorResponse.success)
+                    tvShowDetailResponse.value = ApiResponse.error(msg, errorDetailResponse)
                 }
                 EspressoIdlingResource.decrement()
             }
@@ -174,27 +231,6 @@ class RemoteDataSource constructor(private val context: Context) {
                 EspressoIdlingResource.decrement()
             }
         })
-
-    }
-
-    interface LoadMoviesCallback {
-        fun onAllMoviesReceived(movieDiscoveryResponse: MovieDiscoveryResponse)
-        fun onErrorReceived(errorMessage: String)
-    }
-
-    interface LoadTvShowsCallback {
-        fun onAllTvShowsReceived(tvShowDiscoveryResponse: TvShowDiscoveryResponse)
-        fun onErrorReceived(errorMessage: String)
-    }
-
-    interface LoadMovieDetailCallback {
-        fun onMovieDetailReceived(movieDetailResponse: MovieDetailResponse)
-        fun onMovieCreditsReceived(movieCreditsResponse: MovieCreditsResponse)
-        fun onErrorReceived(errorMessage: String)
-    }
-
-    interface LoadTvShowDetailCallback {
-        fun onTvShowDetailReceived(tvShowDetailResponse: TvShowDetailResponse)
-        fun onErrorReceived(errorMessage: String)
+        return tvShowDetailResponse
     }
 }

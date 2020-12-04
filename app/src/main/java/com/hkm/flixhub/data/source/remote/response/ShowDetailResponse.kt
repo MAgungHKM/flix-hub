@@ -30,6 +30,18 @@ data class MovieDetailResponse(
 
     @field:SerializedName("poster_path")
     val posterPath: String,
+
+    @field:SerializedName("crew")
+    var crew: List<CrewItem> = listOf(),
+
+    @field:SerializedName("status_message")
+    val statusMessage: String = "",
+
+    @field:SerializedName("status_code")
+    val statusCode: Int = 200,
+
+    @field:SerializedName("success")
+    val success: Boolean = true,
 )
 
 data class TvShowDetailResponse(
@@ -63,6 +75,15 @@ data class TvShowDetailResponse(
 
     @field:SerializedName("poster_path")
     val posterPath: String,
+
+    @field:SerializedName("status_message")
+    val statusMessage: String = "",
+
+    @field:SerializedName("status_code")
+    val statusCode: Int = 200,
+
+    @field:SerializedName("success")
+    val success: Boolean = true,
 )
 
 data class GenresItem(

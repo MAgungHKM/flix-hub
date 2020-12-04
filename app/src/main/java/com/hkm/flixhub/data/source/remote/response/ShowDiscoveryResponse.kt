@@ -6,6 +6,15 @@ data class MovieDiscoveryResponse(
 
     @field:SerializedName("results")
     val results: List<MovieResultsItem>,
+
+    @field:SerializedName("status_message")
+    val statusMessage: String = "",
+
+    @field:SerializedName("status_code")
+    val statusCode: Int = 200,
+
+    @field:SerializedName("success")
+    val success: Boolean = true,
 )
 
 data class MovieResultsItem(
@@ -24,6 +33,15 @@ data class TvShowDiscoveryResponse(
 
     @field:SerializedName("results")
     val results: List<TvShowResultsItem>,
+
+    @field:SerializedName("status_message")
+    val statusMessage: String = "",
+
+    @field:SerializedName("status_code")
+    val statusCode: Int = 200,
+
+    @field:SerializedName("success")
+    val success: Boolean = true,
 )
 
 data class TvShowResultsItem(

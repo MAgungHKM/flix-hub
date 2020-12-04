@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
@@ -13,14 +14,14 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.hkm.flixhub.R
-import com.hkm.flixhub.data.source.local.entity.DetailShowEntity
+import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.databinding.FragmentDetailBinding
+import com.hkm.flixhub.utils.ShowType.TYPE_TV_SHOW
+import com.hkm.flixhub.vo.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailFragment : Fragment() {
     companion object {
-        const val TYPE_MOVIE = "movie"
-        const val TYPE_TV_SHOW = "tv_show"
         const val IMG_POSTER_WIDTH = 250
         const val IMG_POSTER_HEIGHT = 500
         const val IMG_BANNER_WIDTH = 500
@@ -54,8 +55,6 @@ class DetailFragment : Fragment() {
             (activity as AppCompatActivity).supportActionBar?.title = mDetailFragmentArgs.showTitle
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-            binding.progressBarDetail.visibility = View.VISIBLE
-
             val showId = mDetailFragmentArgs.showId
             if (showId != null)
                 viewModel.setSelectedShow(showId)
@@ -64,72 +63,115 @@ class DetailFragment : Fragment() {
             if (showType != null)
                 viewModel.setSelectedShowType(showType)
 
-            viewModel.getShowDetail().observe(viewLifecycleOwner, { detail ->
-                with(detail) {
-                    if (errorMessage != "null")
-                        Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
-                            .show()
-                }
+            viewModel.getShowDetail().observe(viewLifecycleOwner, { show ->
+                when (show.status) {
+                    Status.LOADING -> binding.progressBarDetail.visibility = View.VISIBLE
+                    Status.SUCCESS -> {
+                        if (show.data != null) {
+                            with(show.data) {
+                                if (this.errorMessage != "null")
+                                    Toast.makeText(requireActivity(),
+                                        this.errorMessage,
+                                        Toast.LENGTH_LONG)
+                                        .show()
+                            }
 
-                if (detail.director == "null" && detail.errorMessage == "null") {
-                    binding.textDirected.visibility = View.GONE
-                    binding.tvDirector.visibility = View.GONE
-                }
+                            if (show.data.director == "null" && show.data.errorMessage == "null") {
+                                binding.textDirected.visibility = View.GONE
+                                binding.tvDirector.visibility = View.GONE
+                            }
 
-                if (detail.quote == "null") {
-                    binding.tvQuote.visibility = View.GONE
-                }
+                            if (show.data.quote == "null") {
+                                binding.tvQuote.visibility = View.GONE
+                            }
 
-                binding.progressBarDetail.visibility = View.GONE
-                populateView(detail)
+                            val state = show.data.favorited
+                            setFavoriteState(state)
+
+                            binding.progressBarDetail.visibility = View.GONE
+                            populateView(show.data)
+                        }
+                    }
+                    Status.ERROR -> {
+                        binding.progressBarDetail.visibility = View.GONE
+                        Toast.makeText(context, show.data?.errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                }
             })
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             android.R.id.home -> {
                 (activity as AppCompatActivity).onBackPressed()
-                return true
+                true
             }
+            else -> super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
-    private fun populateView(detail: DetailShowEntity) {
-        with(binding) {
-            tvTitle.text = detail.title
-            tvDate.text = detail.releaseDate
-            tvDirector.text = detail.director
-            tvGenre.text = detail.genre
-            tvQuote.text = detail.quote
-            tvScore.text = detail.score
-            tvSynopsis.text = detail.synopsis
+    private fun populateView(show: ShowEntity?) {
+        if (show != null) {
+            with(binding) {
+                tvTitle.text = show.title
+                tvDate.text = show.releaseDate
+                tvDirector.text = show.director
+                tvGenre.text = show.genre
+                tvQuote.text = show.quote
+                tvScore.text = show.score
+                tvSynopsis.text = show.synopsis
 
-            Glide.with(this@DetailFragment)
-                .load(detail.posterPath)
-                .apply(
-                    RequestOptions
-                        .placeholderOf(R.drawable.ic_loading)
-                        .error(R.drawable.ic_error)
-                        .override(IMG_POSTER_WIDTH, IMG_POSTER_HEIGHT)
-                )
-                .into(imgPoster)
-            imgPoster.clipToOutline = true
+                Glide.with(this@DetailFragment)
+                    .load(show.posterPath)
+                    .apply(
+                        RequestOptions
+                            .placeholderOf(R.drawable.ic_loading)
+                            .error(R.drawable.ic_error)
+                            .override(IMG_POSTER_WIDTH, IMG_POSTER_HEIGHT)
+                    )
+                    .into(imgPoster)
+                imgPoster.clipToOutline = true
 
-            Glide.with(this@DetailFragment)
-                .load(detail.bannerPath)
-                .apply(
-                    RequestOptions
-                        .placeholderOf(R.drawable.ic_loading)
-                        .error(R.drawable.ic_error)
-                        .override(IMG_BANNER_WIDTH, IMG_BANNER_HEIGHT)
-                )
-                .into(imgBanner)
-            imgBanner.clipToOutline = true
+                Glide.with(this@DetailFragment)
+                    .load(show.bannerPath)
+                    .apply(
+                        RequestOptions
+                            .placeholderOf(R.drawable.ic_loading)
+                            .error(R.drawable.ic_error)
+                            .override(IMG_BANNER_WIDTH, IMG_BANNER_HEIGHT)
+                    )
+                    .into(imgBanner)
+                imgBanner.clipToOutline = true
 
-            iconShare.setOnClickListener { setOnClickShare(detail.title, detail.showId) }
+                btnShare.setOnClickListener {
+                    val anim = AnimationUtils.loadAnimation(it.context, R.anim.button_click_anim)
+                    btnShare.startAnimation(anim).also {
+                        setOnClickShare(show.title, show.showId)
+                    }
+                }
+
+                btnFavorite.setOnClickListener {
+                    val anim = AnimationUtils.loadAnimation(it.context, R.anim.button_click_anim)
+                    btnFavorite.startAnimation(anim)
+                    if (viewModel.setFavorite())
+                        Toast.makeText(requireActivity(),
+                            getString(R.string.text_add_favorite, show.title),
+                            Toast.LENGTH_SHORT).show()
+                    else
+                        Toast.makeText(requireActivity(),
+                            getString(R.string.text_remove_favorite, show.title),
+                            Toast.LENGTH_SHORT).show()
+                }
+            }
         }
+    }
+
+    private fun setFavoriteState(state: Boolean) {
+        if (state)
+            binding.btnFavorite.setImageResource(R.drawable.ic_favorited_white)
+        else
+            binding.btnFavorite.setImageResource(R.drawable.ic_favorite_white)
     }
 
     private fun setOnClickShare(title: String, showId: String) {

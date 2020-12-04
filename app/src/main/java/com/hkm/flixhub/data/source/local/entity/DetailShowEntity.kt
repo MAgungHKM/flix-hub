@@ -1,5 +1,6 @@
 package com.hkm.flixhub.data.source.local.entity
 
+
 class DetailShowEntity(
     val showId: String,
     val title: String,

@@ -11,181 +11,181 @@ object DataDummy {
 
         listMovies.add(
             ShowEntity(
-                "724989",
-                "Hard Kill",
-                "https://image.tmdb.org/t/p/w780/ugZW8ocsrfgI95pnQ7wrmKDxIe.jpg",
-                "null"
+                showId = "724989",
+                type = ShowType.TYPE_MOVIE,
+                title = "Hard Kill",
+                posterPath = "https://image.tmdb.org/t/p/w780/ugZW8ocsrfgI95pnQ7wrmKDxIe.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "400160",
-                "The SpongeBob Movie: Sponge on the Run",
-                "https://image.tmdb.org/t/p/w780/jlJ8nDhMhCYJuzOw3f52CP1W8MW.jpg",
-                "null"
+                showId = "400160",
+                type = ShowType.TYPE_MOVIE,
+                title = "The SpongeBob Movie: Sponge on the Run",
+                posterPath = "https://image.tmdb.org/t/p/w780/jlJ8nDhMhCYJuzOw3f52CP1W8MW.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "531219",
-                "Roald Dahl's The Witches",
-                "https://image.tmdb.org/t/p/w780/betExZlgK0l7CZ9CsCBVcwO1OjL.jpg",
-                "null"
+                showId = "531219",
+                type = ShowType.TYPE_MOVIE,
+                title = "Roald Dahl's The Witches",
+                posterPath = "https://image.tmdb.org/t/p/w780/betExZlgK0l7CZ9CsCBVcwO1OjL.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "524047",
-                "Greenland",
-                "https://image.tmdb.org/t/p/w780/bNo2mcvSwIvnx8K6y1euAc1TLVq.jpg",
-                "null"
+                showId = "524047",
+                type = ShowType.TYPE_MOVIE,
+                title = "Greenland",
+                posterPath = "https://image.tmdb.org/t/p/w780/bNo2mcvSwIvnx8K6y1euAc1TLVq.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "671039",
-                "Rogue City",
-                "https://image.tmdb.org/t/p/w780/9HT9982bzgN5on1sLRmc1GMn6ZC.jpg",
-                "null"
+                showId = "671039",
+                type = ShowType.TYPE_MOVIE,
+                title = "Rogue City",
+                posterPath = "https://image.tmdb.org/t/p/w780/9HT9982bzgN5on1sLRmc1GMn6ZC.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "682377",
-                "Chick Fight",
-                "https://image.tmdb.org/t/p/w780/4ZocdxnOO6q2UbdKye2wgofLFhB.jpg",
-                "null"
+                showId = "682377",
+                type = ShowType.TYPE_MOVIE,
+                title = "Chick Fight",
+                posterPath = "https://image.tmdb.org/t/p/w780/4ZocdxnOO6q2UbdKye2wgofLFhB.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "337401",
-                "Mulan",
-                "https://image.tmdb.org/t/p/w780/aKx1ARwG55zZ0GpRvU2WrGrCG9o.jpg",
-                "null"
+                showId = "337401",
+                type = ShowType.TYPE_MOVIE,
+                title = "Mulan",
+                posterPath = "https://image.tmdb.org/t/p/w780/aKx1ARwG55zZ0GpRvU2WrGrCG9o.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "741074",
-                "Once Upon a Snowman",
-                "https://image.tmdb.org/t/p/w780/hddzYJtfYYeMDOQVcH58n8m1W3A.jpg",
-                "null"
+                showId = "741074",
+                type = ShowType.TYPE_MOVIE,
+                title = "Once Upon a Snowman",
+                posterPath = "https://image.tmdb.org/t/p/w780/hddzYJtfYYeMDOQVcH58n8m1W3A.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "741067",
-                "Welcome to Sudden Death",
-                "https://image.tmdb.org/t/p/w780/elZ6JCzSEvFOq4gNjNeZsnRFsvj.jpg",
-                "null"
+                showId = "741067",
+                type = ShowType.TYPE_MOVIE,
+                title = "Welcome to Sudden Death",
+                posterPath = "https://image.tmdb.org/t/p/w780/elZ6JCzSEvFOq4gNjNeZsnRFsvj.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "613504",
-                "After We Collided",
-                "https://image.tmdb.org/t/p/w780/kiX7UYfOpYrMFSAGbI6j1pFkLzQ.jpg",
-                "null"
+                showId = "613504",
+                type = ShowType.TYPE_MOVIE,
+                title = "After We Collided",
+                posterPath = "https://image.tmdb.org/t/p/w780/kiX7UYfOpYrMFSAGbI6j1pFkLzQ.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "622855",
-                "Jingle Jangle: A Christmas Journey",
-                "https://image.tmdb.org/t/p/w780/5RbyHIVydD3Krmec1LlUV7rRjet.jpg",
-                "null"
+                showId = "622855",
+                type = ShowType.TYPE_MOVIE,
+                title = "Jingle Jangle: A Christmas Journey",
+                posterPath = "https://image.tmdb.org/t/p/w780/5RbyHIVydD3Krmec1LlUV7rRjet.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "497582",
-                "Enola Holmes",
-                "https://image.tmdb.org/t/p/w780/riYInlsq2kf1AWoGm80JQW5dLKp.jpg",
-                "null"
+                showId = "497582",
+                type = ShowType.TYPE_MOVIE,
+                title = "Enola Holmes",
+                posterPath = "https://image.tmdb.org/t/p/w780/riYInlsq2kf1AWoGm80JQW5dLKp.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "694919",
-                "Money Plane",
-                "https://image.tmdb.org/t/p/w780/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg",
-                "null"
+                showId = "694919",
+                type = ShowType.TYPE_MOVIE,
+                title = "Money Plane",
+                posterPath = "https://image.tmdb.org/t/p/w780/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "340102",
-                "The New Mutants",
-                "https://image.tmdb.org/t/p/w780/xZNw9xxtwbEf25NYoz52KdbXHPM.jpg",
-                "null"
+                showId = "340102",
+                type = ShowType.TYPE_MOVIE,
+                title = "The New Mutants",
+                posterPath = "https://image.tmdb.org/t/p/w780/xZNw9xxtwbEf25NYoz52KdbXHPM.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "618353",
-                "Batman: Death in the Family",
-                "https://image.tmdb.org/t/p/w780/k8Q9ulyRE8fkvZMkAM9LPYMKctb.jpg",
-                "null"
+                showId = "618353",
+                type = ShowType.TYPE_MOVIE,
+                title = "Batman: Death in the Family",
+                posterPath = "https://image.tmdb.org/t/p/w780/k8Q9ulyRE8fkvZMkAM9LPYMKctb.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "624779",
-                "VFW",
-                "https://image.tmdb.org/t/p/w780/AnVD7Gn14uOTQhcc5xYZGQ9DRvS.jpg",
-                "null"
+                showId = "624779",
+                type = ShowType.TYPE_MOVIE,
+                title = "VFW",
+                posterPath = "https://image.tmdb.org/t/p/w780/AnVD7Gn14uOTQhcc5xYZGQ9DRvS.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "575088",
-                "Baba Yaga: Terror of the Dark Forest",
-                "https://image.tmdb.org/t/p/w780/wkEKQiMStMwzvM8DAurdRB7Bf47.jpg",
-                "null"
+                showId = "575088",
+                type = ShowType.TYPE_MOVIE,
+                title = "Baba Yaga: Terror of the Dark Forest",
+                posterPath = "https://image.tmdb.org/t/p/w780/wkEKQiMStMwzvM8DAurdRB7Bf47.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "539885",
-                "Ava",
-                "https://image.tmdb.org/t/p/w780/qzA87Wf4jo1h8JMk9GilyIYvwsA.jpg",
-                "null"
+                showId = "539885",
+                type = ShowType.TYPE_MOVIE,
+                title = "Ava",
+                posterPath = "https://image.tmdb.org/t/p/w780/qzA87Wf4jo1h8JMk9GilyIYvwsA.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "571384",
-                "Come Play",
-                "https://image.tmdb.org/t/p/w780/e98dJUitAoKLwmzjQ0Yxp1VQrnU.jpg",
-                "null"
+                showId = "571384",
+                type = ShowType.TYPE_MOVIE,
+                title = "Come Play",
+                posterPath = "https://image.tmdb.org/t/p/w780/e98dJUitAoKLwmzjQ0Yxp1VQrnU.jpg",
             )
         )
 
         listMovies.add(
             ShowEntity(
-                "560050",
-                "Over the Moon",
-                "https://image.tmdb.org/t/p/w780/lQfdytwN7eh0tXWjIiMceFdBBvD.jpg",
-                "null"
+                showId = "560050",
+                type = ShowType.TYPE_MOVIE,
+                title = "Over the Moon",
+                posterPath = "https://image.tmdb.org/t/p/w780/lQfdytwN7eh0tXWjIiMceFdBBvD.jpg",
             )
         )
 
@@ -197,222 +197,222 @@ object DataDummy {
 
         listTvShows.add(
             ShowEntity(
-                "82856",
-                "The Mandalorian",
-                "https://image.tmdb.org/t/p/w780/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg",
-                "null"
+                showId = "82856",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Mandalorian",
+                posterPath = "https://image.tmdb.org/t/p/w780/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "71712",
-                "The Good Doctor",
-                "https://image.tmdb.org/t/p/w780/6tfT03sGp9k4c0J3dypjrI8TSAI.jpg",
-                "null"
+                showId = "71712",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Good Doctor",
+                posterPath = "https://image.tmdb.org/t/p/w780/6tfT03sGp9k4c0J3dypjrI8TSAI.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "1416",
-                "Grey's Anatomy",
-                "https://image.tmdb.org/t/p/w780/clnyhPqj1SNgpAdeSS6a6fwE6Bo.jpg",
-                "null"
+                showId = "1416",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "Grey's Anatomy",
+                posterPath = "https://image.tmdb.org/t/p/w780/clnyhPqj1SNgpAdeSS6a6fwE6Bo.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "62286",
-                "Fear the Walking Dead",
-                "https://image.tmdb.org/t/p/w780/wGFUewXPeMErCe2xnCmmLEiHOGh.jpg",
-                "null"
+                showId = "62286",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "Fear the Walking Dead",
+                posterPath = "https://image.tmdb.org/t/p/w780/wGFUewXPeMErCe2xnCmmLEiHOGh.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "63174",
-                "Lucifer",
-                "https://image.tmdb.org/t/p/w780/4EYPN5mVIhKLfxGruy7Dy41dTVn.jpg",
-                "null"
+                showId = "63174",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "Lucifer",
+                posterPath = "https://image.tmdb.org/t/p/w780/4EYPN5mVIhKLfxGruy7Dy41dTVn.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "87739",
-                "The Queen's Gambit",
-                "https://image.tmdb.org/t/p/w780/zU0htwkhNvBQdVSIKB9s6hgVeFK.jpg",
-                "null"
+                showId = "87739",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Queen's Gambit",
+                posterPath = "https://image.tmdb.org/t/p/w780/zU0htwkhNvBQdVSIKB9s6hgVeFK.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "76479",
-                "The Boys",
-                "https://image.tmdb.org/t/p/w780/mY7SeH4HFFxW1hiI6cWuwCRKptN.jpg",
-                "null"
+                showId = "76479",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Boys",
+                posterPath = "https://image.tmdb.org/t/p/w780/mY7SeH4HFFxW1hiI6cWuwCRKptN.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "68507",
-                "His Dark Materials",
-                "https://image.tmdb.org/t/p/w780/g6tIKGc3f1H5QMz1dcgCwADKpZ7.jpg",
-                "null"
+                showId = "68507",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "His Dark Materials",
+                posterPath = "https://image.tmdb.org/t/p/w780/g6tIKGc3f1H5QMz1dcgCwADKpZ7.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "80748",
-                "FBI",
-                "https://image.tmdb.org/t/p/w780/7aWmC7BjwBFgIKA77VqrXyRPicJ.jpg",
-                "null"
+                showId = "80748",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "FBI",
+                posterPath = "https://image.tmdb.org/t/p/w780/7aWmC7BjwBFgIKA77VqrXyRPicJ.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "75006",
-                "The Umbrella Academy",
-                "https://image.tmdb.org/t/p/w780/scZlQQYnDVlnpxFTxaIv2g0BWnL.jpg",
-                "null"
+                showId = "75006",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Umbrella Academy",
+                posterPath = "https://image.tmdb.org/t/p/w780/scZlQQYnDVlnpxFTxaIv2g0BWnL.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "1622",
-                "Supernatural",
-                "https://image.tmdb.org/t/p/w780/KoYWXbnYuS3b0GyQPkbuexlVK9.jpg",
-                "null"
+                showId = "1622",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "Supernatural",
+                posterPath = "https://image.tmdb.org/t/p/w780/KoYWXbnYuS3b0GyQPkbuexlVK9.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "94305",
-                "The Walking Dead: World Beyond",
-                "https://image.tmdb.org/t/p/w780/z31GxpVgDsFAF4paZR8PRsiP16D.jpg",
-                "null"
+                showId = "94305",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Walking Dead: World Beyond",
+                posterPath = "https://image.tmdb.org/t/p/w780/z31GxpVgDsFAF4paZR8PRsiP16D.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "91605",
-                "I Am...",
-                "https://image.tmdb.org/t/p/w780/oogunE22HDTcTxFakKQbwqfw1qo.jpg",
-                "null"
+                showId = "91605",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "I Am...",
+                posterPath = "https://image.tmdb.org/t/p/w780/oogunE22HDTcTxFakKQbwqfw1qo.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "48866",
-                "The 100",
-                "https://image.tmdb.org/t/p/w780/wcaDIAG1QdXQLRaj4vC1EFdBT2.jpg",
-                "null"
+                showId = "48866",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The 100",
+                posterPath = "https://image.tmdb.org/t/p/w780/wcaDIAG1QdXQLRaj4vC1EFdBT2.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "69050",
-                "Riverdale",
-                "https://image.tmdb.org/t/p/w780/4X7o1ssOEvp4BFLim1AZmPNcYbU.jpg",
-                "null"
+                showId = "69050",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "Riverdale",
+                posterPath = "https://image.tmdb.org/t/p/w780/4X7o1ssOEvp4BFLim1AZmPNcYbU.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "456",
-                "The Simpsons",
-                "https://image.tmdb.org/t/p/w780/2IWouZK4gkgHhJa3oyYuSWfSqbG.jpg",
-                "null"
+                showId = "456",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Simpsons",
+                posterPath = "https://image.tmdb.org/t/p/w780/2IWouZK4gkgHhJa3oyYuSWfSqbG.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "18165",
-                "The Vampire Diaries",
-                "https://image.tmdb.org/t/p/w780/aBkVgChtyyJaHyZh1gfd8DbzQon.jpg",
-                "null"
+                showId = "18165",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Vampire Diaries",
+                posterPath = "https://image.tmdb.org/t/p/w780/aBkVgChtyyJaHyZh1gfd8DbzQon.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "1399",
-                "Game of Thrones",
-                "https://image.tmdb.org/t/p/w780/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg",
-                "null"
+                showId = "1399",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "Game of Thrones",
+                posterPath = "https://image.tmdb.org/t/p/w780/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "58841",
-                "Chicago P.D.",
-                "https://image.tmdb.org/t/p/w780/OlPR1kctwXzSUJQkZINDDhNlHV.jpg",
-                "null"
+                showId = "58841",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "Chicago P.D.",
+                posterPath = "https://image.tmdb.org/t/p/w780/OlPR1kctwXzSUJQkZINDDhNlHV.jpg",
             )
         )
 
         listTvShows.add(
             ShowEntity(
-                "1402",
-                "The Walking Dead",
-                "https://image.tmdb.org/t/p/w780/qgjP2OrrX9gc6M270xdPnEmE9tC.jpg",
-                "null"
+                showId = "1402",
+                type = ShowType.TYPE_TV_SHOW,
+                title = "The Walking Dead",
+                posterPath = "https://image.tmdb.org/t/p/w780/qgjP2OrrX9gc6M270xdPnEmE9tC.jpg",
             )
         )
 
         return listTvShows
     }
 
-    fun generateDummyTvShowsDetail(): ArrayList<DetailShowEntity> {
-        val listTvShowsDetail = ArrayList<DetailShowEntity>()
+    fun generateDummyTvShowsDetail(): ArrayList<ShowEntity> {
+        val listTvShowsDetail = ArrayList<ShowEntity>()
 
-        listTvShowsDetail.add(DetailShowEntity(
-            "82856",
-            "The Mandalorian",
-            "After the fall of the Galactic Empire, lawlessness has spread throughout the galaxy. A lone gunfighter makes his way through the outer reaches, earning his keep as a bounty hunter.",
-            "12th November 2019",
-            "Jon Favreau",
-            "Bounty hunting is a complicated profession.",
-            "85%",
-            "Sci-Fi & Fantasy, Action & Adventure, Western",
-            "https://image.tmdb.org/t/p/w1280/9ijMGlJKqcslswWUzTEwScm82Gs.jpg",
-            "https://image.tmdb.org/t/p/w780/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg",
-            "null"
+        listTvShowsDetail.add(ShowEntity(
+            showId = "82856",
+            type = ShowType.TYPE_TV_SHOW,
+            title = "The Mandalorian",
+            synopsis = "After the fall of the Galactic Empire, lawlessness has spread throughout the galaxy. A lone gunfighter makes his way through the outer reaches, earning his keep as a bounty hunter.",
+            releaseDate = "12th November 2019",
+            director = "Jon Favreau",
+            quote = "Bounty hunting is a complicated profession.",
+            score = "85%",
+            genre = "Sci-Fi & Fantasy, Action & Adventure, Western",
+            bannerPath = "https://image.tmdb.org/t/p/w1280/9ijMGlJKqcslswWUzTEwScm82Gs.jpg",
+            posterPath = "https://image.tmdb.org/t/p/w780/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg",
         ))
 
         return listTvShowsDetail
     }
 
-    fun generateDummyMoviesDetail(): ArrayList<DetailShowEntity> {
-        val listMoviesDetail = ArrayList<DetailShowEntity>()
+    fun generateDummyMoviesDetail(): ArrayList<ShowEntity> {
+        val listMoviesDetail = ArrayList<ShowEntity>()
 
-        listMoviesDetail.add(DetailShowEntity(
-            "497582",
-            "Enola Holmes",
-            "While searching for her missing mother, intrepid teen Enola Holmes uses her sleuthing skills to outsmart big brother Sherlock and help a runaway lord.",
-            "23rd September 2020",
-            "Harry Bradbeer",
-            "Mystery runs in the family.",
-            "75%",
-            "Crime, Drama, Mystery",
-            "https://image.tmdb.org/t/p/w1280/kMe4TKMDNXTKptQPAdOF0oZHq3V.jpg",
-            "https://image.tmdb.org/t/p/w780/riYInlsq2kf1AWoGm80JQW5dLKp.jpg",
-            "null"
+        listMoviesDetail.add(ShowEntity(
+            showId = "497582",
+            type = ShowType.TYPE_MOVIE,
+            title = "Enola Holmes",
+            synopsis = "While searching for her missing mother, intrepid teen Enola Holmes uses her sleuthing skills to outsmart big brother Sherlock and help a runaway lord.",
+            releaseDate = "23rd September 2020",
+            director = "Harry Bradbeer",
+            quote = "Mystery runs in the family.",
+            score = "75%",
+            genre = "Crime, Drama, Mystery",
+            bannerPath = "https://image.tmdb.org/t/p/w1280/kMe4TKMDNXTKptQPAdOF0oZHq3V.jpg",
+            posterPath = "https://image.tmdb.org/t/p/w780/riYInlsq2kf1AWoGm80JQW5dLKp.jpg",
         ))
 
         return listMoviesDetail
