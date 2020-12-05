@@ -10,7 +10,8 @@ class DetailScreen : Screen<DetailScreen>() {
     val progressBar = KProgressBar { withId(R.id.progress_bar_detail) }
     val imgBanner = KImageView { withId(R.id.img_banner) }
     val imgPoster = KImageView { withId(R.id.img_poster) }
-    val iconShare = KImageView { withId(R.id.icon_share) }
+    val btnShare = KImageView { withId(R.id.btn_share) }
+    val btnFavorite = KImageView { withId(R.id.btn_favorite) }
     val tvQuote = KTextView { withId(R.id.tv_quote) }
     val tvScore = KTextView { withId(R.id.tv_score) }
     val tvTitle = KTextView { withId(R.id.tv_title) }

@@ -6,7 +6,9 @@ import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Transformations
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +19,11 @@ import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.databinding.FragmentFavoriteTvShowBinding
 import com.hkm.flixhub.ui.favorite.FavoriteFragmentDirections
 import com.hkm.flixhub.utils.ShowType
+import com.hkm.flixhub.utils.SortUtils.DEFAULT
+import com.hkm.flixhub.utils.SortUtils.SCORE_HIGHEST
+import com.hkm.flixhub.utils.SortUtils.SCORE_LOWEST
+import com.hkm.flixhub.utils.SortUtils.TITLE_ASC
+import com.hkm.flixhub.utils.SortUtils.TITLE_DESC
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoriteTvShowFragment : Fragment() {
@@ -45,32 +52,36 @@ class FavoriteTvShowFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
             tvShowAdapter = TvShowAdapter()
+            tvShowAdapter.stateRestorationPolicy =
+                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             binding.progressBarFavoriteTvShow.visibility = View.VISIBLE
-            viewModel.getPages().observe(viewLifecycleOwner, { page ->
-                viewModel.getTvShows(page).observe(viewLifecycleOwner, { tvShows ->
-                    if (!tvShows.isNullOrEmpty()) {
-                        with(binding) {
-                            with(tvShows[0]) {
-                                if (this?.errorMessage != "null")
-                                    Toast.makeText(requireActivity(),
-                                        this?.errorMessage,
-                                        Toast.LENGTH_LONG)
-                                        .show()
-                            }
+            Transformations.switchMap(viewModel.getSortBy()) { sortBy ->
+                Transformations.switchMap(viewModel.getPages()) { selectedPage ->
+                    viewModel.getTvShows(sortBy, selectedPage)
+                }
+            }.observe(viewLifecycleOwner, { tvShows ->
+                if (!tvShows.isNullOrEmpty()) {
+                    with(binding) {
+                        with(tvShows[0]) {
+                            if (this?.errorMessage != "null")
+                                Toast.makeText(requireActivity(),
+                                    this?.errorMessage,
+                                    Toast.LENGTH_LONG)
+                                    .show()
+                        }
 
-                            this.progressBarFavoriteTvShow.visibility = View.GONE
-                            tvShowAdapter.submitList(tvShows)
-                            setItemOnClickListener()
-                            tvShowAdapter.notifyDataSetChanged()
-                        }
-                    } else {
-                        with(binding) {
-                            this.progressBarFavoriteTvShow.visibility = View.GONE
-                            this.tvFavoriteTvShowNotFound.visibility = View.VISIBLE
-                        }
+                        this.progressBarFavoriteTvShow.visibility = View.GONE
+                        tvShowAdapter.submitList(tvShows)
+                        setItemOnClickListener()
+                        tvShowAdapter.notifyDataSetChanged()
                     }
-                })
+                } else {
+                    with(binding) {
+                        this.progressBarFavoriteTvShow.visibility = View.GONE
+                        this.tvFavoriteTvShowNotFound.visibility = View.VISIBLE
+                    }
+                }
             })
 
             with(binding.rvFavoriteTvShow) {
@@ -86,7 +97,7 @@ class FavoriteTvShowFragment : Fragment() {
                         val lastVisible = layoutManager.findLastVisibleItemPosition()
 
                         val endHasBeenReached = lastVisible + 1 >= totalItemCount
-                        if (totalItemCount > 0 && endHasBeenReached) {
+                        if (totalItemCount > 0 && endHasBeenReached && binding.progressBarFavoriteTvShow.isGone) {
                             viewModel.nextPage()
                         }
                     }
@@ -118,6 +129,17 @@ class FavoriteTvShowFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.favorite_menu, menu)
+        inflater.inflate(R.menu.favorite_sort_menu, menu)
+        viewModel.getSortBy().observe(viewLifecycleOwner, { sort ->
+            when (sort) {
+                DEFAULT -> menu.findItem(R.id.action_default).isChecked = true
+                TITLE_ASC -> menu.findItem(R.id.action_title_asc).isChecked = true
+                TITLE_DESC -> menu.findItem(R.id.action_title_desc).isChecked = true
+                SCORE_HIGHEST -> menu.findItem(R.id.action_score_highest).isChecked = true
+                SCORE_LOWEST -> menu.findItem(R.id.action_score_lowest).isChecked = true
+            }
+        })
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -137,7 +159,23 @@ class FavoriteTvShowFragment : Fragment() {
                 showDeleteDialog()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> {
+                var sortBy = ""
+                when (item.itemId) {
+                    R.id.action_default -> sortBy = DEFAULT
+                    R.id.action_title_asc -> sortBy = TITLE_ASC
+                    R.id.action_title_desc -> sortBy = TITLE_DESC
+                    R.id.action_score_highest -> sortBy = SCORE_HIGHEST
+                    R.id.action_score_lowest -> sortBy = SCORE_LOWEST
+                }
+
+//                viewModel.refreshMovies()
+                viewModel.setSortBy(sortBy)
+                tvShowAdapter.submitList(null)
+                item.isChecked = true
+
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 

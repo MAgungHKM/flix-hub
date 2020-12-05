@@ -27,7 +27,7 @@ buildscript {
         idleResourceVersion = '3.3.0'
 
         materialVersion = '1.2.1'
-        recyclerViewVersion = '1.1.0'
+        recyclerViewVersion = '1.2.0-beta01'
         glideVersion = '4.11.0'
         archLifecycleVersion = '2.2.0'
     }

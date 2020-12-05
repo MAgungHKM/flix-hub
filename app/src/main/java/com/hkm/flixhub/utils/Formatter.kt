@@ -17,7 +17,7 @@ object Formatter {
             returnString = day
 
         return when (returnString) {
-            "11", "22" -> {
+            "11", "12" -> {
                 "${returnString}th"
             }
             else -> {

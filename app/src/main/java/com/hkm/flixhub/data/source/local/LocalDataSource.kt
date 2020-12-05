@@ -2,6 +2,7 @@ package com.hkm.flixhub.data.source.local
 
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.data.source.local.room.ShowDao
 import com.hkm.flixhub.utils.PaginationUtils.ITEM_PER_PAGE
@@ -14,11 +15,11 @@ class LocalDataSource constructor(private val mShowDao: ShowDao) {
     fun getAllTvShow(page: String): DataSource.Factory<Int, ShowEntity> =
         mShowDao.getShows(ShowType.TYPE_TV_SHOW, (page.toInt() * ITEM_PER_PAGE))
 
-    fun getFavoritedMovies(page: String): DataSource.Factory<Int, ShowEntity> =
-        mShowDao.getFavoritedShows(ShowType.TYPE_MOVIE, (page.toInt() * ITEM_PER_PAGE))
+    fun getFavoritedMovies(query: SupportSQLiteQuery): DataSource.Factory<Int, ShowEntity> =
+        mShowDao.getFavoritedShows(query)
 
-    fun getFavoritedTvShows(page: String): DataSource.Factory<Int, ShowEntity> =
-        mShowDao.getFavoritedShows(ShowType.TYPE_TV_SHOW, (page.toInt() * ITEM_PER_PAGE))
+    fun getFavoritedTvShows(query: SupportSQLiteQuery): DataSource.Factory<Int, ShowEntity> =
+        mShowDao.getFavoritedShows(query)
 
     fun getShowDetail(showId: String): LiveData<ShowEntity> = mShowDao.getShowByShowId(showId)
 

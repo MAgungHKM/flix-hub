@@ -1,6 +1,5 @@
 package com.hkm.flixhub.utils
 
-import com.hkm.flixhub.data.source.local.entity.DetailShowEntity
 import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.data.source.remote.response.*
 
@@ -418,19 +417,39 @@ object DataDummy {
         return listMoviesDetail
     }
 
-    fun generateEmptyShowDetail(errorMessage: String = "null"): DetailShowEntity {
-        return DetailShowEntity(
+    fun generateEmptyShowDetail(errorMessage: String = "null"): ShowEntity {
+        return ShowEntity(
+            showId = "null",
+            type = "null",
+            title = "null",
+            synopsis = "synopsis",
+            genre = "genre",
+            releaseDate = "releaseDate",
+            score = "score",
+            posterPath = "null",
+            errorMessage = errorMessage
+        )
+    }
+
+    fun generateEmptyRemoteDummyTvShowDetail(
+        statusMessage: String,
+        statusCode: Int,
+        success: Boolean,
+    ): TvShowDetailResponse {
+        return TvShowDetailResponse(
             "null",
             "null",
             "null",
+            listOf(),
+            -1.0,
             "null",
             "null",
+            -1,
+            listOf(),
             "null",
-            "null",
-            "null",
-            "null",
-            "null",
-            errorMessage
+            statusMessage,
+            statusCode,
+            success
         )
     }
 

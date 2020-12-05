@@ -31,4 +31,9 @@
     <string name="menu_original_title">Original Title</string>
     <string name="menu_score">Score</string>
     <string name="menu_vote_count">Vote Count</string>
+    <string name="menu_default">Default</string>
+    <string name="menu_title_a_z">Title (A-z)</string>
+    <string name="menu_title_z_a">Title (Z-a)</string>
+    <string name="menu_score_highest">Score (Highest)</string>
+    <string name="menu_score_lowest">Score (Lowest)</string>
 </resources>

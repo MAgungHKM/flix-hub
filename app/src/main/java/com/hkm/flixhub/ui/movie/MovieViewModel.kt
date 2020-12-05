@@ -32,7 +32,10 @@ class MovieViewModel(private val showRepository: ShowRepository) : ViewModel() {
             pages.value = page.toString()
     }
 
-    fun getMovies(sort: String, page: String): LiveData<Resource<PagedList<ShowEntity>>> {
+    fun getMovies(
+        sort: String = POPULARITY,
+        page: String = FIRST_PAGE,
+    ): LiveData<Resource<PagedList<ShowEntity>>> {
         if (movies == null || movies?.value?.data.isNullOrEmpty() || (movies?.value?.data as PagedList).size < ((getPages().value?.toInt() as Int) * ITEM_PER_PAGE))
             loadMovies(sort, page)
 

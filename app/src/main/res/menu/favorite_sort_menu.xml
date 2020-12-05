@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/action_default"
+            android:checked="true"
+            android:title="@string/menu_default" />
+        <item
+            android:id="@+id/action_title_asc"
+            android:checked="false"
+            android:title="@string/menu_title_a_z" />
+        <item
+            android:id="@+id/action_title_desc"
+            android:checked="false"
+            android:title="@string/menu_title_z_a" />
+        <item
+            android:id="@+id/action_score_highest"
+            android:checked="false"
+            android:title="@string/menu_score_highest" />
+        <item
+            android:id="@+id/action_score_lowest"
+            android:checked="false"
+            android:title="@string/menu_score_lowest" />
+    </group>
+</menu>

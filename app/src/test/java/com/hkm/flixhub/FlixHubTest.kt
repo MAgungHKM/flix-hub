@@ -19,7 +19,7 @@ class FlixHubTest : Application() {
     }
 
     // Use to load the modules that are needed
-    internal fun loadModules(module: Module, block: () -> Unit) {
+    internal fun loadModules(module: List<Module>, block: () -> Unit) {
         loadKoinModules(module)
         block()
         unloadKoinModules(module)

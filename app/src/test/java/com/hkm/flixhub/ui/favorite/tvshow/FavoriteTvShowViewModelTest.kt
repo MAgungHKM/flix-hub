@@ -1,4 +1,4 @@
-package com.hkm.flixhub.ui.movie
+package com.hkm.flixhub.ui.favorite.tvshow
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,6 @@ import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.di.databaseModule
 import com.hkm.flixhub.di.repositoryModule
 import com.hkm.flixhub.utils.DataDummy
-import com.hkm.flixhub.vo.Resource
 import io.mockk.*
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -27,12 +26,12 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(minSdk = 21, maxSdk = 28, application = FlixHubTest::class)
-class MovieViewModelTest : KoinTest {
-    private lateinit var mMovieViewModel: MovieViewModel
+class FavoriteTvShowViewModelTest : KoinTest {
+    private lateinit var mFavoriteTvShowViewModel: FavoriteTvShowViewModel
     private lateinit var mShowRepository: ShowRepository
 
     private val app: FlixHubTest = ApplicationProvider.getApplicationContext()
-    private val observer: Observer<Resource<PagedList<ShowEntity>>> = mockk(relaxed = true)
+    private val observer: Observer<PagedList<ShowEntity>> = mockk(relaxed = true)
     private val pagedList: PagedList<ShowEntity> = mockk(relaxed = true)
 
     @get:Rule
@@ -45,27 +44,27 @@ class MovieViewModelTest : KoinTest {
     }
 
     @Test
-    fun getMovies() {
+    fun getTvShows() {
         app.loadModules(listOf(
             repositoryModule,
             databaseModule
         )) {
             mShowRepository = spyk(get<ShowRepository>(), recordPrivateCalls = true)
-            mMovieViewModel = MovieViewModel(mShowRepository)
+            mFavoriteTvShowViewModel = FavoriteTvShowViewModel(mShowRepository)
 
-            pagedList.addAll(DataDummy.generateDummyMovies())
-            val dummyData = Resource.success(pagedList)
-            val movies = MutableLiveData<Resource<PagedList<ShowEntity>>>()
+            pagedList.addAll(DataDummy.generateDummyTvShows())
+            val dummyData = pagedList
+            val movies = MutableLiveData<PagedList<ShowEntity>>()
             movies.value = dummyData
 
-            every { mShowRepository.getAllMovies() } returns movies
-            val showEntities = mMovieViewModel.getMovies().value?.data
-            verifyOrder { mShowRepository.getAllMovies() }
+            every { mShowRepository.getFavoritedTvShows() } returns movies
+            val showEntities = mFavoriteTvShowViewModel.getTvShows().value
+            verifyOrder { mShowRepository.getFavoritedTvShows() }
 
             assertNotNull(showEntities)
-            assertEquals(dummyData.data?.size, showEntities?.size)
+            assertEquals(dummyData.size, showEntities?.size)
 
-            mMovieViewModel.getMovies().observeForever(observer)
+            mFavoriteTvShowViewModel.getTvShows().observeForever(observer)
             verifyOrder { observer.onChanged(dummyData) }
         }
 

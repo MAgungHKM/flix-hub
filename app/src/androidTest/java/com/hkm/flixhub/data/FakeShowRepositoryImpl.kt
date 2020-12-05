@@ -20,11 +20,11 @@ import com.hkm.flixhub.utils.ShowType
 import com.hkm.flixhub.utils.SortUtils
 import com.hkm.flixhub.vo.Resource
 
-class ShowRepositoryImpl constructor(
+class FakeShowRepositoryImpl constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val appExecutors: AppExecutors,
-) : ShowRepository {
+) : FakeShowRepository {
     private var lastMovieSort: String? = null
     private var lastTvShowSort: String? = null
 

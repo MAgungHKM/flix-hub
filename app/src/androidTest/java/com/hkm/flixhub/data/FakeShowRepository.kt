@@ -8,7 +8,7 @@ import com.hkm.flixhub.utils.SortUtils.DEFAULT
 import com.hkm.flixhub.utils.SortUtils.POPULARITY
 import com.hkm.flixhub.vo.Resource
 
-interface ShowRepository {
+interface FakeShowRepository {
     fun getAllMovies(
         sort: String = POPULARITY,
         page: String = FIRST_PAGE,

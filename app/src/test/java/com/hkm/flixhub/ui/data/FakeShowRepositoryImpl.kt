@@ -1,8 +1,9 @@
-package com.hkm.flixhub.data
+package com.hkm.flixhub.ui.data
 
 import androidx.lifecycle.LiveData
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import com.hkm.flixhub.data.ShowRepository
 import com.hkm.flixhub.data.source.NetworkBoundResource
 import com.hkm.flixhub.data.source.local.LocalDataSource
 import com.hkm.flixhub.data.source.local.entity.ShowEntity
@@ -20,7 +21,7 @@ import com.hkm.flixhub.utils.ShowType
 import com.hkm.flixhub.utils.SortUtils
 import com.hkm.flixhub.vo.Resource
 
-class ShowRepositoryImpl constructor(
+class FakeShowRepositoryImpl constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val appExecutors: AppExecutors,

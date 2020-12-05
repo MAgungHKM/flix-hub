@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Transformations
 import androidx.navigation.findNavController
@@ -92,7 +93,7 @@ class TvShowFragment : Fragment() {
                         val lastVisible = layoutManager.findLastVisibleItemPosition()
 
                         val endHasBeenReached = lastVisible + 1 >= totalItemCount
-                        if (totalItemCount > 0 && endHasBeenReached) {
+                        if (totalItemCount > 0 && endHasBeenReached && binding.progressBarTvShow.isGone) {
                             viewModel.nextPage()
                         }
                     }

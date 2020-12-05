@@ -32,7 +32,10 @@ class TvShowViewModel(private val showRepository: ShowRepository) : ViewModel() 
             pages.postValue(page.toString())
     }
 
-    fun getTvShows(sort: String, page: String): LiveData<Resource<PagedList<ShowEntity>>> {
+    fun getTvShows(
+        sort: String = SortUtils.POPULARITY,
+        page: String = FIRST_PAGE,
+    ): LiveData<Resource<PagedList<ShowEntity>>> {
         if (tvShows == null || tvShows?.value?.data.isNullOrEmpty() || (tvShows?.value?.data as PagedList).size < ((getPages().value?.toInt() as Int) * ITEM_PER_PAGE))
             loadTvShows(sort, page)
 

@@ -95,7 +95,7 @@ class MovieFragment : Fragment() {
                         val totalItemCount = layoutManager.itemCount
                         val lastVisible = layoutManager.findLastVisibleItemPosition()
 
-                        val endHasBeenReached = lastVisible + 3 >= totalItemCount
+                        val endHasBeenReached = lastVisible + 1 >= totalItemCount
                         if (totalItemCount > 0 && endHasBeenReached && binding.progressBarMovie.isGone) {
                             viewModel.nextPage()
                         }

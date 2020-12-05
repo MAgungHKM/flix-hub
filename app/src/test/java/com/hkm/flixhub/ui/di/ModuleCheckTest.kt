@@ -2,7 +2,9 @@ package com.hkm.flixhub.ui.di
 
 import androidx.test.core.app.ApplicationProvider
 import com.hkm.flixhub.FlixHubTest
-import com.hkm.flixhub.di.appModule
+import com.hkm.flixhub.di.databaseModule
+import com.hkm.flixhub.di.repositoryModule
+import com.hkm.flixhub.di.viewModelModule
 import io.mockk.mockk
 import io.mockk.unmockkAll
 import org.junit.After
@@ -39,6 +41,10 @@ class ModuleCheckTest {
     @Test
     fun checkAppModules() = checkModules {
         androidContext(app)
-        modules(appModule)
+        modules(listOf(
+            repositoryModule,
+            viewModelModule,
+            databaseModule
+        ))
     }
 }
