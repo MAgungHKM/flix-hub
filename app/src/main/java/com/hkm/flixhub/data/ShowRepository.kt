@@ -6,9 +6,9 @@ import com.hkm.flixhub.data.source.local.entity.ShowEntity
 import com.hkm.flixhub.vo.Resource
 
 interface ShowRepository {
-    fun getAllMovies(page: String): LiveData<Resource<PagedList<ShowEntity>>>
+    fun getAllMovies(sort: String, page: String): LiveData<Resource<PagedList<ShowEntity>>>
 
-    fun getAllTvShows(page: String): LiveData<Resource<PagedList<ShowEntity>>>
+    fun getAllTvShows(sort: String, page: String): LiveData<Resource<PagedList<ShowEntity>>>
 
     fun getFavoritedMovies(page: String): LiveData<PagedList<ShowEntity>>
 

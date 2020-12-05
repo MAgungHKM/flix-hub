@@ -24,9 +24,15 @@ class ShowRepositoryImpl constructor(
     private val localDataSource: LocalDataSource,
     private val appExecutors: AppExecutors,
 ) : ShowRepository {
-    override fun getAllMovies(page: String): LiveData<Resource<PagedList<ShowEntity>>> {
-        return object :
-            NetworkBoundResource<PagedList<ShowEntity>, MovieDiscoveryResponse>(appExecutors) {
+    private var lastSort: String? = null
+
+    override fun getAllMovies(
+        sort: String,
+        page: String,
+    ): LiveData<Resource<PagedList<ShowEntity>>> {
+        val networkBoundResource = object :
+            NetworkBoundResource<PagedList<ShowEntity>, MovieDiscoveryResponse>(appExecutors,
+                lastSort) {
             override fun loadFromDB(): LiveData<PagedList<ShowEntity>> {
                 val config = PagedList.Config.Builder()
                     .setEnablePlaceholders(false)
@@ -35,13 +41,13 @@ class ShowRepositoryImpl constructor(
                 return LivePagedListBuilder(localDataSource.getAllMovie(page), config).build()
             }
 
-            override fun shouldFetch(data: PagedList<ShowEntity>?): Boolean =
-                data.isNullOrEmpty() || data.size < page.toInt() * ITEM_PER_PAGE
+            override fun shouldFetch(data: PagedList<ShowEntity>?, lastSort: String?): Boolean =
+                data.isNullOrEmpty() || data.size < page.toInt() * ITEM_PER_PAGE || lastSort != sort
 
             override fun createCall(): LiveData<ApiResponse<MovieDiscoveryResponse>> =
-                remoteDataSource.getAllMovie(page)
+                remoteDataSource.getAllMovie(sort, pagse)
 
-            override fun saveCallResult(data: MovieDiscoveryResponse) {
+            override fun saveCallResult(data: MovieDiscoveryResponse, lastSort: String?) {
                 val movieList = ArrayList<ShowEntity>()
                 val results = data.results
                 for (result in results) {
@@ -55,14 +61,25 @@ class ShowRepositoryImpl constructor(
                     movieList.add(show)
                 }
 
+                if (lastSort != null && lastSort != sort)
+                    localDataSource.deleteAllExceptFavorite(ShowType.TYPE_MOVIE)
+
                 localDataSource.insertShows(movieList)
             }
         }.asLiveData()
+
+        lastSort = sort
+
+        return networkBoundResource
     }
 
-    override fun getAllTvShows(page: String): LiveData<Resource<PagedList<ShowEntity>>> {
+    override fun getAllTvShows(
+        sort: String,
+        page: String,
+    ): LiveData<Resource<PagedList<ShowEntity>>> {
         return object :
-            NetworkBoundResource<PagedList<ShowEntity>, TvShowDiscoveryResponse>(appExecutors) {
+            NetworkBoundResource<PagedList<ShowEntity>, TvShowDiscoveryResponse>(appExecutors,
+                sort) {
             override fun loadFromDB(): LiveData<PagedList<ShowEntity>> {
                 val config = PagedList.Config.Builder()
                     .setEnablePlaceholders(false)
@@ -71,13 +88,13 @@ class ShowRepositoryImpl constructor(
                 return LivePagedListBuilder(localDataSource.getAllTvShow(page), config).build()
             }
 
-            override fun shouldFetch(data: PagedList<ShowEntity>?): Boolean =
-                data.isNullOrEmpty() || data.size < page.toInt() * ITEM_PER_PAGE
+            override fun shouldFetch(data: PagedList<ShowEntity>?, lastSort: String?): Boolean =
+                data.isNullOrEmpty() || data.size < page.toInt() * ITEM_PER_PAGE || lastSort != sort
 
             override fun createCall(): LiveData<ApiResponse<TvShowDiscoveryResponse>> =
-                remoteDataSource.getAllTvShow(page)
+                remoteDataSource.getAllTvShow(sort, page)
 
-            override fun saveCallResult(data: TvShowDiscoveryResponse) {
+            override fun saveCallResult(data: TvShowDiscoveryResponse, lastSort: String?) {
                 val tvShowList = ArrayList<ShowEntity>()
                 val results = data.results
                 for (result in results) {
@@ -91,6 +108,9 @@ class ShowRepositoryImpl constructor(
                     tvShowList.add(show)
                 }
 
+                if (lastSort != null && lastSort != sort)
+                    localDataSource.deleteAllExceptFavorite(ShowType.TYPE_TV_SHOW)
+
                 localDataSource.insertShows(tvShowList)
             }
         }.asLiveData()
@@ -101,17 +121,17 @@ class ShowRepositoryImpl constructor(
             override fun loadFromDB(): LiveData<ShowEntity> =
                 localDataSource.getShowDetail(showId)
 
-            override fun shouldFetch(data: ShowEntity?): Boolean =
+            override fun shouldFetch(data: ShowEntity?, lastSort: String?): Boolean =
                 data?.synopsis == "null" || data?.genre == "null" || data?.releaseDate == "null" || data?.score == "null"
 
             override fun createCall(): LiveData<ApiResponse<MovieDetailResponse>> =
                 remoteDataSource.getMovieDetail(showId)
 
-            override fun saveCallResult(data: MovieDetailResponse) {
+            override fun saveCallResult(data: MovieDetailResponse, lastSort: String?) {
                 val score = data.voteAverage.toString().replace(".", "").plus("%")
                 val genres = data.genres.joinToString { it.name }
                 val posterPath = "https://image.tmdb.org/t/p/w780${data.posterPath}"
-                val bannerPath = if (data.backdropPath != "null")
+                val bannerPath = if (data.backdropPath != null)
                     "https://image.tmdb.org/t/p/w1280${data.backdropPath}" else posterPath
                 val quote =
                     if (data.tagline != "") data.tagline else "null"
@@ -159,13 +179,13 @@ class ShowRepositoryImpl constructor(
             override fun loadFromDB(): LiveData<ShowEntity> =
                 localDataSource.getShowDetail(showId)
 
-            override fun shouldFetch(data: ShowEntity?): Boolean =
+            override fun shouldFetch(data: ShowEntity?, lastSort: String?): Boolean =
                 data?.synopsis == "null" || data?.genre == "null" || data?.releaseDate == "null" || data?.score == "null"
 
             override fun createCall(): LiveData<ApiResponse<TvShowDetailResponse>> =
                 remoteDataSource.getTvShowDetail(showId)
 
-            override fun saveCallResult(data: TvShowDetailResponse) {
+            override fun saveCallResult(data: TvShowDetailResponse, lastSort: String?) {
                 val score = data.voteAverage.toString().replace(".", "").plus("%")
                 val genres = data.genres.joinToString { it.name }
                 val posterPath = "https://image.tmdb.org/t/p/w780${data.posterPath}"

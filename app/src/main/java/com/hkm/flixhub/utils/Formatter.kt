@@ -3,6 +3,7 @@ package com.hkm.flixhub.utils
 object Formatter {
     fun dateFormatter(date: String): String {
         val dateArray = date.split("-").toTypedArray()
+        if (dateArray.size < 3) return date
 
         return "${getDay(dateArray[2])} ${getMonth(dateArray[1])} ${dateArray[0]}"
     }

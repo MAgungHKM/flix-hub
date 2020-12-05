@@ -9,6 +9,11 @@ import com.hkm.flixhub.vo.Resource
 
 abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecutors: AppExecutors) {
 
+    constructor(mExecutors: AppExecutors, lastSort: String?) : this(mExecutors) {
+        this.lastSort = lastSort
+    }
+
+    private var lastSort: String? = null
     private val result = MediatorLiveData<Resource<ResultType>>()
 
     init {
@@ -19,7 +24,11 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecut
 
         result.addSource(dbSource) { data ->
             result.removeSource(dbSource)
-            if (shouldFetch(data)) {
+            val lastSort = this.lastSort
+            val shouldFetch =
+                if (lastSort != null) shouldFetch(data, lastSort) else shouldFetch(data)
+
+            if (shouldFetch) {
                 fetchFromNetwork(dbSource)
             } else {
                 result.addSource(dbSource) { newData ->
@@ -33,11 +42,11 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecut
 
     protected abstract fun loadFromDB(): LiveData<ResultType>
 
-    protected abstract fun shouldFetch(data: ResultType?): Boolean
+    protected abstract fun shouldFetch(data: ResultType?, lastSort: String? = null): Boolean
 
     protected abstract fun createCall(): LiveData<ApiResponse<RequestType>>
 
-    protected abstract fun saveCallResult(data: RequestType)
+    protected abstract fun saveCallResult(data: RequestType, lastSort: String? = null)
 
     private fun fetchFromNetwork(dbSource: LiveData<ResultType>) {
 
@@ -52,7 +61,11 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecut
             when (response.status) {
                 StatusResponse.SUCCESS ->
                     mExecutors.diskIO().execute {
-                        saveCallResult(response.body)
+                        if (lastSort != null)
+                            saveCallResult(response.body, lastSort)
+                        else
+                            saveCallResult(response.body)
+
                         mExecutors.mainThread().execute {
                             result.addSource(loadFromDB()) { newData ->
                                 result.value = Resource.success(newData)

@@ -27,4 +27,8 @@
     <string name="dialog_delete_message">Are you sure you want to delete every %s from favorite?</string>
     <string name="dialog_confirm_yes">YES</string>
     <string name="dialog_confirm_no">NO</string>
+    <string name="menu_popularity">Popularity</string>
+    <string name="menu_original_title">Original Title</string>
+    <string name="menu_score">Score</string>
+    <string name="menu_vote_count">Vote Count</string>
 </resources>

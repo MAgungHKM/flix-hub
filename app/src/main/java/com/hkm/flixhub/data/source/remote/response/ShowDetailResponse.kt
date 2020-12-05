@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class MovieDetailResponse(
 
     @field:SerializedName("backdrop_path")
-    val backdropPath: String,
+    val backdropPath: String?,
 
     @field:SerializedName("overview")
     val overview: String,

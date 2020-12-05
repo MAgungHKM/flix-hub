@@ -30,4 +30,6 @@ class LocalDataSource constructor(private val mShowDao: ShowDao) {
         show.favorited = newState
         mShowDao.updateShow(show)
     }
+
+    fun deleteAllExceptFavorite(showType: String) = mShowDao.deleteAllExceptFavorite(showType)
 }

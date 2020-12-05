@@ -19,10 +19,10 @@ class RemoteDataSource constructor(private val context: Context) {
         private val TAG = RemoteDataSource::class.java.simpleName
     }
 
-    fun getAllMovie(page: String): LiveData<ApiResponse<MovieDiscoveryResponse>> {
+    fun getAllMovie(sort: String, page: String): LiveData<ApiResponse<MovieDiscoveryResponse>> {
         EspressoIdlingResource.increment()
         val movieDiscoveryResponse = MutableLiveData<ApiResponse<MovieDiscoveryResponse>>()
-        val client = ApiConfig.getApiService().getMovieDiscovery(page = page)
+        val client = ApiConfig.getApiService().getMovieDiscovery(sortBy = sort, page = page)
         client.enqueue(object : Callback<MovieDiscoveryResponse> {
             override fun onResponse(
                 call: Call<MovieDiscoveryResponse>,
@@ -57,10 +57,10 @@ class RemoteDataSource constructor(private val context: Context) {
         return movieDiscoveryResponse
     }
 
-    fun getAllTvShow(page: String): LiveData<ApiResponse<TvShowDiscoveryResponse>> {
+    fun getAllTvShow(sort: String, page: String): LiveData<ApiResponse<TvShowDiscoveryResponse>> {
         EspressoIdlingResource.increment()
         val tvShowDiscoveryResponse = MutableLiveData<ApiResponse<TvShowDiscoveryResponse>>()
-        val client = ApiConfig.getApiService().getTvShowDiscovery(page = page)
+        val client = ApiConfig.getApiService().getTvShowDiscovery(sortBy = sort, page = page)
         client.enqueue(object : Callback<TvShowDiscoveryResponse> {
             override fun onResponse(
                 call: Call<TvShowDiscoveryResponse>,

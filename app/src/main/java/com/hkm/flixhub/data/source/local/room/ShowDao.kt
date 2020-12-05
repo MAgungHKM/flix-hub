@@ -8,10 +8,10 @@ import com.hkm.flixhub.data.source.local.entity.ShowEntity
 @Dao
 interface ShowDao {
 
-    @Query("SELECT * FROM show_entities where type = :showType LIMIT :page")
+    @Query("SELECT * FROM show_entities WHERE type = :showType LIMIT :page")
     fun getShows(showType: String, page: Int): DataSource.Factory<Int, ShowEntity>
 
-    @Query("SELECT * FROM show_entities where type = :showType and favorited = 1 LIMIT :page")
+    @Query("SELECT * FROM show_entities WHERE type = :showType AND favorited = 1 LIMIT :page")
     fun getFavoritedShows(showType: String, page: Int): DataSource.Factory<Int, ShowEntity>
 
     @Transaction
@@ -23,4 +23,7 @@ interface ShowDao {
 
     @Update
     fun updateShow(show: ShowEntity)
+
+    @Query("DELETE FROM show_entities WHERE type = :showType AND favorited != 1")
+    fun deleteAllExceptFavorite(showType: String)
 }

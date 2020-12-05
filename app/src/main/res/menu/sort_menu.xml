@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/action_popularity"
+            android:checked="true"
+            android:title="@string/menu_popularity" />
+        <item
+            android:id="@+id/action_original_title"
+            android:checked="false"
+            android:title="@string/menu_original_title" />
+        <item
+            android:id="@+id/action_score"
+            android:checked="false"
+            android:title="@string/menu_score" />
+        <item
+            android:id="@+id/action_vote_count"
+            android:checked="false"
+            android:title="@string/menu_vote_count" />
+    </group>
+</menu>
