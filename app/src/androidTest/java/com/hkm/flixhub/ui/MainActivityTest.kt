@@ -164,7 +164,14 @@ class MainActivityTest : KoinTest {
                                         idle(250)
                                     }
 
-                                    check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
+                                    while (true) {
+                                        try {
+                                            check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
+                                            break
+                                        } catch (e: AssertionFailedError) {
+                                            idle(250)
+                                        }
+                                    }
                                 }
 
                                 perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
@@ -531,12 +538,19 @@ class MainActivityTest : KoinTest {
                                         idle(250)
                                     }
 
-                                    check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
+
+                                    while (true) {
+                                        try {
+                                            check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
+                                            break
+                                        } catch (e: AssertionFailedError) {
+                                            idle(250)
+                                        }
+                                    }
                                 }
 
                                 perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
                                     index))
-
 
                                 while (true) {
                                     try {
