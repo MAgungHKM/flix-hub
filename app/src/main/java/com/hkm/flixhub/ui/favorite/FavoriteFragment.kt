@@ -21,10 +21,6 @@ class FavoriteFragment : Fragment() {
     private val movieViewModel: FavoriteMovieViewModel by viewModel()
     private val tvShowViewModel: FavoriteTvShowViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,

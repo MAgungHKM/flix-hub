@@ -51,7 +51,7 @@ class DetailViewModel(private val showRepository: ShowRepository) : ViewModel() 
                         errorMessage = errorMessage
                     )
 
-                    val showResource = Resource<ShowEntity>(Status.SUCCESS, show, null)
+                    val showResource = Resource(Status.SUCCESS, show, null)
                     val showLiveData = MutableLiveData<Resource<ShowEntity>>()
                     showLiveData.value = showResource
 

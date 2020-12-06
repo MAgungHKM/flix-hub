@@ -431,28 +431,6 @@ object DataDummy {
         )
     }
 
-    fun generateEmptyRemoteDummyTvShowDetail(
-        statusMessage: String,
-        statusCode: Int,
-        success: Boolean,
-    ): TvShowDetailResponse {
-        return TvShowDetailResponse(
-            "null",
-            "null",
-            "null",
-            listOf(),
-            -1.0,
-            "null",
-            "null",
-            -1,
-            listOf(),
-            "null",
-            statusMessage,
-            statusCode,
-            success
-        )
-    }
-
     fun generateRemoteDummyMovies(): MovieDiscoveryResponse {
         val listMovieResultsItem = ArrayList<MovieResultsItem>()
 
@@ -863,14 +841,6 @@ object DataDummy {
         return MovieCreditsResponse(
             497582,
             listCrewItem,
-        )
-    }
-
-    fun generateRemoteErrorResponse(statusCode: Int, statusMessage: String): ErrorResponse {
-        return ErrorResponse(
-            statusMessage,
-            statusCode,
-            false
         )
     }
 }
