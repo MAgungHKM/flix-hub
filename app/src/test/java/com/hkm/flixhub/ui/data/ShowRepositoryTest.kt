@@ -165,7 +165,7 @@ class ShowRepositoryTest : KoinTest {
             val genre = movieDetailResponse.genres.joinToString { it.name }
             val quote =
                 if (movieDetailResponse.tagline != "") movieDetailResponse.tagline else "null"
-            val releaseDate = Formatter.dateFormatter(movieDetailResponse.releaseDate)
+            val releaseDate = Formatter.dateFormatter(movieDetailResponse.releaseDate.toString())
             val errorMessage = "null"
 
             assertEquals(movieDetailResponse.id.toString(), movieDetail.data?.showId)
@@ -216,7 +216,7 @@ class ShowRepositoryTest : KoinTest {
             val genre = tvShowDetailResponse.genres.joinToString { it.name }
             val quote =
                 if (tvShowDetailResponse.tagline != "") tvShowDetailResponse.tagline else "null"
-            val releaseDate = Formatter.dateFormatter(tvShowDetailResponse.firstAirDate)
+            val releaseDate = Formatter.dateFormatter(tvShowDetailResponse.firstAirDate.toString())
             val errorMessage = "null"
 
             assertEquals(tvShowDetailResponse.id.toString(), tvShowDetail.data?.showId)

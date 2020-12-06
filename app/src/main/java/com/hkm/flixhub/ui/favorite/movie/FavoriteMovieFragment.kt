@@ -62,6 +62,7 @@ class FavoriteMovieFragment : Fragment() {
                 }
             }.observe(viewLifecycleOwner, { movies ->
                 if (!movies.isNullOrEmpty()) {
+                    binding.rvFavoriteMovie.visibility = View.VISIBLE
                     with(binding) {
                         with(movies[0]) {
                             if (this?.errorMessage != "null")
@@ -72,6 +73,7 @@ class FavoriteMovieFragment : Fragment() {
                         }
 
                         this.progressBarFavoriteMovie.visibility = View.GONE
+
                         movieAdapter.submitList(movies)
                         setItemOnClickListener()
                         movieAdapter.notifyDataSetChanged()
@@ -79,6 +81,7 @@ class FavoriteMovieFragment : Fragment() {
                 } else {
                     with(binding) {
                         this.progressBarFavoriteMovie.visibility = View.GONE
+                        this.rvFavoriteMovie.visibility = View.GONE
                         this.tvFavoriteMovieNotFound.visibility = View.VISIBLE
                     }
                 }
@@ -169,7 +172,6 @@ class FavoriteMovieFragment : Fragment() {
                     R.id.action_score_lowest -> sortBy = SCORE_LOWEST
                 }
 
-//                viewModel.refreshMovies()
                 viewModel.setSortBy(sortBy)
                 movieAdapter.submitList(null)
                 item.isChecked = true

@@ -39,9 +39,9 @@ class FavoriteFragment : Fragment() {
         val sectionsPagerAdapter = SectionsPagerAdapter(FavoriteFragment::class.java.simpleName,
             requireActivity(),
             childFragmentManager)
-        binding.viewPager.adapter = sectionsPagerAdapter
-        binding.viewPager.offscreenPageLimit = 2
-        binding.tabs.setupWithViewPager(binding.viewPager)
+        binding.viewPagerFavorite.adapter = sectionsPagerAdapter
+        binding.viewPagerFavorite.offscreenPageLimit = 2
+        binding.tabsFavorite.setupWithViewPager(binding.viewPagerFavorite)
     }
 
     override fun onStart() {

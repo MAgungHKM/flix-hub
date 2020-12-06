@@ -62,6 +62,7 @@ class FavoriteTvShowFragment : Fragment() {
                 }
             }.observe(viewLifecycleOwner, { tvShows ->
                 if (!tvShows.isNullOrEmpty()) {
+                    binding.rvFavoriteTvShow.visibility = View.VISIBLE
                     with(binding) {
                         with(tvShows[0]) {
                             if (this?.errorMessage != "null")
@@ -72,13 +73,18 @@ class FavoriteTvShowFragment : Fragment() {
                         }
 
                         this.progressBarFavoriteTvShow.visibility = View.GONE
+
                         tvShowAdapter.submitList(tvShows)
                         setItemOnClickListener()
                         tvShowAdapter.notifyDataSetChanged()
+
+                        tvShowAdapter.stateRestorationPolicy =
+                            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                     }
                 } else {
                     with(binding) {
                         this.progressBarFavoriteTvShow.visibility = View.GONE
+                        this.rvFavoriteTvShow.visibility = View.GONE
                         this.tvFavoriteTvShowNotFound.visibility = View.VISIBLE
                     }
                 }
@@ -169,7 +175,6 @@ class FavoriteTvShowFragment : Fragment() {
                     R.id.action_score_lowest -> sortBy = SCORE_LOWEST
                 }
 
-//                viewModel.refreshMovies()
                 viewModel.setSortBy(sortBy)
                 tvShowAdapter.submitList(null)
                 item.isChecked = true

@@ -1,8 +1,6 @@
 package com.hkm.flixhub.ui
 
 import android.content.Intent
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.PagedList
@@ -37,6 +35,9 @@ import com.hkm.flixhub.data.source.remote.RemoteDataSource
 import com.hkm.flixhub.di.databaseModule
 import com.hkm.flixhub.di.viewModelModule
 import com.hkm.flixhub.ui.detail.DetailScreen
+import com.hkm.flixhub.ui.favorite.FavoriteScreen
+import com.hkm.flixhub.ui.favorite.movie.FavoriteMovieScreen
+import com.hkm.flixhub.ui.favorite.tvshow.FavoriteTvShowScreen
 import com.hkm.flixhub.ui.home.HomeScreen
 import com.hkm.flixhub.ui.movie.MovieScreen
 import com.hkm.flixhub.ui.tvshow.TvShowScreen
@@ -46,12 +47,17 @@ import com.hkm.flixhub.utils.PaginationUtils.FIRST_PAGE
 import com.hkm.flixhub.utils.PaginationUtils.SECOND_PAGE
 import com.hkm.flixhub.utils.RecyclerViewTestUtil
 import com.hkm.flixhub.utils.RecyclerViewTestUtil.Companion.atPosition
+import com.hkm.flixhub.utils.SortUtils.DEFAULT
 import com.hkm.flixhub.utils.SortUtils.ORIGINAL_TITLE
 import com.hkm.flixhub.utils.SortUtils.POPULARITY
 import com.hkm.flixhub.utils.SortUtils.SCORE
+import com.hkm.flixhub.utils.SortUtils.SCORE_HIGHEST
+import com.hkm.flixhub.utils.SortUtils.SCORE_LOWEST
+import com.hkm.flixhub.utils.SortUtils.TITLE_ASC
+import com.hkm.flixhub.utils.SortUtils.TITLE_DESC
 import com.hkm.flixhub.utils.SortUtils.VOTE_COUNT
-import com.hkm.flixhub.vo.Resource
 import com.hkm.flixhub.vo.Status
+import junit.framework.AssertionFailedError
 import org.junit.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -59,18 +65,38 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 
 class MainActivityTest : KoinTest {
-    private lateinit var movieLiveData: LiveData<Resource<PagedList<ShowEntity>>>
-    private lateinit var tvShowLiveData: LiveData<Resource<PagedList<ShowEntity>>>
     private var dataMovie: PagedList<ShowEntity>? = null
     private var dataTvShow: PagedList<ShowEntity>? = null
-    private var dataMovieDetail: ShowEntity? = null
-    private var dataTvShowDetail: ShowEntity? = null
-    private var movieId: String? = null
-    private var tvShowId: String? = null
+    private var dataMovieDetail = ArrayList<ShowEntity>()
+    private var dataTvShowDetail = ArrayList<ShowEntity>()
+    private var dataFavoriteMovie: PagedList<ShowEntity>? = null
+    private var dataFavoriteTvShow: PagedList<ShowEntity>? = null
+    private var movieId = ArrayList<String>()
+    private var tvShowId = ArrayList<String>()
     private val pageMovie = MutableLiveData<String>()
     private val pageTvShow = MutableLiveData<String>()
     private val sortMovie = MutableLiveData<String>()
     private val sortTvShow = MutableLiveData<String>()
+    private val sortFavoriteMovie = MutableLiveData<String>()
+    private val sortFavoriteTvShow = MutableLiveData<String>()
+    private var testTag = "null"
+
+    private val apiSort = listOf(ORIGINAL_TITLE, SCORE, VOTE_COUNT, POPULARITY)
+    private val apiSortString = listOf(
+        R.string.menu_original_title,
+        R.string.menu_score,
+        R.string.menu_vote_count,
+        R.string.menu_popularity
+    )
+
+    private val favoriteSort = listOf(TITLE_ASC, TITLE_DESC, SCORE_HIGHEST, SCORE_LOWEST, DEFAULT)
+    private val favoriteSortString = listOf(
+        R.string.menu_title_a_z,
+        R.string.menu_title_z_a,
+        R.string.menu_score_highest,
+        R.string.menu_score_lowest,
+        R.string.menu_default
+    )
 
     private val app: FlixHubInstrumentedTest = ApplicationProvider.getApplicationContext()
 
@@ -79,12 +105,16 @@ class MainActivityTest : KoinTest {
 
     @Before
     fun setUp() {
+        testTag = "null"
         IdlingRegistry.getInstance().register(EspressoIdlingResource.getIdlingResource())
         Intents.init()
     }
 
     @After
     fun tearDown() {
+        testTag = "null"
+        dataFavoriteMovie = null
+        dataFavoriteTvShow = null
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.getIdlingResource())
         Intents.release()
     }
@@ -108,154 +138,62 @@ class MainActivityTest : KoinTest {
                     isDisplayed()
                     isAtPage(0)
                 }
+
+                onView(withText(getResourceString(R.string.movie))).perform(click())
             }
 
-            onScreen<MovieScreen> {
-                rvMovie {
-                    with(onView(withId(R.id.rv_movie))) {
-                        check(matches(ViewMatchers.isDisplayed()))
-                        check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
-                        this@onScreen.progressBar.isGone()
-
-                        for (index in 0 until 40) {
-                            if (index == 19) {
-                                pageMovie.postValue(SECOND_PAGE)
-                                while ((dataMovie?.size as Int) < 40) {
+            for (sortIndex in apiSort.indices) {
+                onScreen<MovieScreen> {
+                    rvMovie {
+                        with(onView(withId(R.id.rv_movie))) {
+                            while (true) {
+                                try {
+                                    check(matches(ViewMatchers.isDisplayed()))
+                                    check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
+                                    this@onScreen.progressBar.isGone()
+                                    break
+                                } catch (e: AssertionFailedError) {
                                     idle(250)
                                 }
-
-                                Log.wtf("SIZE", dataMovie?.size.toString())
-
-                                check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
                             }
 
-                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                                index))
-                            check(matches(atPosition(index,
-                                hasDescendant(withText(dataMovie?.get(index)?.title)))))
-                        }
-                        pageMovie.postValue(FIRST_PAGE)
-                    }
-                }
-            }
+                            for (index in 0 until 40) {
+                                if (index == 19) {
+                                    pageMovie.postValue(SECOND_PAGE)
+                                    while ((dataMovie?.size as Int) < 40) {
+                                        idle(250)
+                                    }
 
-            onScreen<MovieScreen> {
-                openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-                onView(withText(getResourceString(R.string.menu_original_title))).perform(click())
-                    .also {
-                        sortMovie.postValue(ORIGINAL_TITLE)
-                    }
-
-                while (dataMovie == null) {
-                    idle(250)
-                }
-            }
-
-            onScreen<MovieScreen> {
-                rvMovie {
-                    with(onView(withId(R.id.rv_movie))) {
-                        check(matches(ViewMatchers.isDisplayed()))
-                        check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
-                        this@onScreen.progressBar.isGone()
-
-                        for (index in 0 until 40) {
-                            if (index == 19) {
-                                pageMovie.postValue(SECOND_PAGE)
-                                while ((dataMovie?.size as Int) < 40) {
-                                    idle(250)
+                                    check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
                                 }
 
-                                Log.wtf("SIZE", dataMovie?.size.toString())
+                                perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
+                                    index))
 
-                                check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
-                            }
-
-                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                                index))
-                            check(matches(atPosition(index,
-                                hasDescendant(withText(dataMovie?.get(index)?.title)))))
-                        }
-                        pageMovie.postValue(FIRST_PAGE)
-                    }
-                }
-            }
-
-            onScreen<MovieScreen> {
-                openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-                onView(withText(getResourceString(R.string.menu_score))).perform(click()).also {
-                    sortMovie.postValue(SCORE)
-                }
-
-                while (dataMovie == null) {
-                    idle(250)
-                }
-            }
-
-            onScreen<MovieScreen> {
-                rvMovie {
-                    with(onView(withId(R.id.rv_movie))) {
-                        check(matches(ViewMatchers.isDisplayed()))
-                        check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
-                        this@onScreen.progressBar.isGone()
-
-                        for (index in 0 until 40) {
-                            if (index == 19) {
-                                pageMovie.postValue(SECOND_PAGE)
-                                while ((dataMovie?.size as Int) < 40) {
-                                    idle(250)
+                                while (true) {
+                                    try {
+                                        check(matches(atPosition(index,
+                                            hasDescendant(withText(dataMovie?.get(index)?.title)))))
+                                        break
+                                    } catch (e: AssertionFailedError) {
+                                        idle(250)
+                                    }
                                 }
-
-                                Log.wtf("SIZE", dataMovie?.size.toString())
-
-                                check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
                             }
-
-                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                                index))
-                            check(matches(atPosition(index,
-                                hasDescendant(withText(dataMovie?.get(index)?.title)))))
+                            pageMovie.postValue(FIRST_PAGE)
                         }
-                        pageMovie.postValue(FIRST_PAGE)
                     }
                 }
-            }
 
-            onScreen<MovieScreen> {
-                openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-                onView(withText(getResourceString(R.string.menu_vote_count))).perform(click())
-                    .also {
-                        sortMovie.postValue(VOTE_COUNT)
-                    }
-
-                while (dataMovie == null) {
-                    idle(250)
-                }
-            }
-
-            onScreen<MovieScreen> {
-                rvMovie {
-                    with(onView(withId(R.id.rv_movie))) {
-                        check(matches(ViewMatchers.isDisplayed()))
-                        check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
-                        this@onScreen.progressBar.isGone()
-
-                        for (index in 0 until 40) {
-                            if (index == 19) {
-                                pageMovie.postValue(SECOND_PAGE)
-                                while ((dataMovie?.size as Int) < 40) {
-                                    idle(250)
-                                }
-
-                                Log.wtf("SIZE", dataMovie?.size.toString())
-
-                                check(RecyclerViewTestUtil.hasSize(dataMovie?.size as Int))
-                            }
-
-                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                                index))
-                            check(matches(atPosition(index,
-                                hasDescendant(withText(dataMovie?.get(index)?.title)))))
+                onScreen<MovieScreen> {
+                    openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+                    onView(withText(getResourceString(apiSortString[sortIndex]))).perform(click())
+                        .also {
+                            sortMovie.postValue(apiSort[sortIndex])
                         }
+
+                    while (dataMovie == null) {
+                        idle(250)
                     }
                 }
             }
@@ -264,7 +202,11 @@ class MainActivityTest : KoinTest {
 
     @Test
     fun loadDetailMovie() {
+        testTag = "detail_movie"
+
         startTest(app) {
+            val movieDetail = dataMovieDetail[0]
+
             onScreen<MainScreen> {
                 toolbar {
                     isDisplayed()
@@ -290,7 +232,7 @@ class MainActivityTest : KoinTest {
                     with(onView(withId(R.id.rv_movie))) {
                         this@onScreen.progressBar.isGone()
                         check(matches(atPosition(0,
-                            hasDescendant(withText(dataMovieDetail?.title)))))
+                            hasDescendant(withText(movieDetail.title)))))
                         perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                             0,
                             ViewActions.click()))
@@ -301,7 +243,7 @@ class MainActivityTest : KoinTest {
             onScreen<MainScreen> {
                 toolbar {
                     isDisplayed()
-                    hasTitle(dataMovieDetail?.title.toString())
+                    hasTitle(movieDetail.title)
                 }
             }
 
@@ -311,31 +253,31 @@ class MainActivityTest : KoinTest {
                 }
                 tvTitle {
                     isDisplayed()
-                    hasText(dataMovieDetail?.title.toString())
+                    hasText(movieDetail.title)
                 }
                 tvDirector {
                     isDisplayed()
-                    hasText(dataMovieDetail?.director.toString())
+                    hasText(movieDetail.director)
                 }
                 tvGenre {
                     isDisplayed()
-                    hasText(dataMovieDetail?.genre.toString())
+                    hasText(movieDetail.genre)
                 }
                 tvQuote {
                     isDisplayed()
-                    hasText(dataMovieDetail?.quote.toString())
+                    hasText(movieDetail.quote)
                 }
                 tvScore {
                     isDisplayed()
-                    hasText(dataMovieDetail?.score.toString())
+                    hasText(movieDetail.score)
                 }
                 tvDate {
                     isDisplayed()
-                    hasText(dataMovieDetail?.releaseDate.toString())
+                    hasText(movieDetail.releaseDate)
                 }
                 tvSynopsis {
                     isDisplayed()
-                    hasText(dataMovieDetail?.synopsis.toString())
+                    hasText(movieDetail.synopsis)
                 }
                 imgPoster {
                     isDisplayed()
@@ -349,6 +291,194 @@ class MainActivityTest : KoinTest {
                     intended(hasAction(Intent.ACTION_CHOOSER))
                     intended(hasExtra(Intent.EXTRA_TITLE, getResourceString(R.string.share_title)))
                 }
+            }
+        }
+    }
+
+    @Test
+    fun loadFavoriteMovie() {
+        testTag = "favorite_movie"
+
+        startTest(app) {
+            onScreen<MainScreen> {
+                toolbar {
+                    isDisplayed()
+                    hasTitle(R.string.app_name)
+                }
+            }
+
+            onScreen<HomeScreen> {
+                sortFavoriteMovie.postValue(DEFAULT)
+
+                while (dataFavoriteMovie == null) {
+                    idle(250)
+                }
+
+                onView(withId(R.id.menu_favorite)).perform(click())
+            }
+
+            onScreen<MainScreen> {
+                toolbar {
+                    isDisplayed()
+                    hasTitle(R.string.menu_favorite)
+                }
+            }
+
+            onScreen<FavoriteScreen> {
+                sortFavoriteMovie.postValue(DEFAULT)
+
+                onView(withId(R.id.menu_delete_all)).perform(click())
+                onView(withText(R.string.dialog_confirm_yes)).perform(click())
+            }
+
+            onScreen<FavoriteMovieScreen> {
+                progressBar.isGone()
+                tvFavoriteMovieNotFound.isDisplayed()
+                rvFavoriteMovie.isGone()
+                pressBack()
+            }
+
+            onScreen<HomeScreen> {
+                tabs {
+                    isDisplayed()
+                    isTabSelected(0)
+                }
+                viewPager {
+                    isDisplayed()
+                    isAtPage(0)
+                }
+
+                onView(withText(getResourceString(R.string.movie))).perform(click())
+            }
+
+            for (index in 0 until 6) {
+                onScreen<MovieScreen> {
+                    rvMovie {
+                        with(onView(withId(R.id.rv_movie))) {
+                            this@onScreen.progressBar.isGone()
+                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
+                                index))
+                            perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                                index,
+                                ViewActions.click()))
+                        }
+                    }
+                }
+
+                onScreen<DetailScreen> {
+                    progressBar {
+                        isGone()
+                    }
+                    btnFavorite {
+                        click()
+                    }
+
+                    pressBack()
+                }
+            }
+
+            onScreen<HomeScreen> {
+                sortFavoriteMovie.postValue(DEFAULT)
+
+                while (dataFavoriteMovie == null) {
+                    idle(250)
+                }
+
+                onView(withId(R.id.menu_favorite)).perform(click())
+            }
+
+            onScreen<FavoriteScreen> {
+                tabsFavorite {
+                    isDisplayed()
+                    isTabSelected(0)
+                }
+                viewPagerFavorite {
+                    isDisplayed()
+                    isAtPage(0)
+                }
+
+                onView(withText(getResourceString(R.string.movie))).perform(click())
+            }
+
+            onScreen<FavoriteMovieScreen> {
+                progressBar.isGone()
+                rvFavoriteMovie {
+                    isDisplayed()
+                    hasSize(dataFavoriteMovie?.size as Int)
+                }
+            }
+
+            for (sortIndex in favoriteSort.indices) {
+                onScreen<FavoriteMovieScreen> {
+                    openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+                    onView(withText(getResourceString(favoriteSortString[sortIndex]))).perform(click())
+                        .also {
+                            dataFavoriteMovie = null
+                            sortFavoriteMovie.postValue(favoriteSort[sortIndex])
+                        }
+
+                    while (dataFavoriteMovie == null) {
+                        idle(250)
+                    }
+                }
+
+                onScreen<FavoriteMovieScreen> {
+                    rvFavoriteMovie {
+                        with(onView(withId(R.id.rv_favorite_movie))) {
+                            check(matches(ViewMatchers.isDisplayed()))
+                            check(RecyclerViewTestUtil.hasSize(dataFavoriteMovie?.size as Int))
+
+                            for ((index, movie) in (dataFavoriteMovie as PagedList<ShowEntity>).withIndex()) {
+                                perform(RecyclerViewActions
+                                    .scrollToPosition<RecyclerView.ViewHolder>(index))
+                                check(matches(atPosition(index,
+                                    hasDescendant(withText(movie.title)))))
+                            }
+                        }
+                    }
+                }
+            }
+
+            onScreen<FavoriteMovieScreen> {
+                rvFavoriteMovie {
+                    with(onView(withId(R.id.rv_favorite_movie))) {
+                        this@onScreen.progressBar.isGone()
+                        perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
+                            0))
+                        check(matches(atPosition(0,
+                            hasDescendant(withText(dataFavoriteMovie?.get(0)?.title)))))
+                        perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                            0,
+                            ViewActions.click()))
+                    }
+                }
+            }
+
+            onScreen<DetailScreen> {
+                progressBar.isGone()
+                btnFavorite.click()
+                pressBack()
+            }
+
+            onScreen<FavoriteMovieScreen> {
+                progressBar.isGone()
+                rvFavoriteMovie {
+                    isDisplayed()
+                    hasSize(dataFavoriteMovie?.size as Int)
+                }
+            }
+
+            onScreen<FavoriteScreen> {
+                sortFavoriteMovie.postValue(DEFAULT)
+
+                onView(withId(R.id.menu_delete_all)).perform(click())
+                onView(withText(R.string.dialog_confirm_yes)).perform(click())
+            }
+
+            onScreen<FavoriteMovieScreen> {
+                progressBar.isGone()
+                rvFavoriteMovie.isGone()
+                tvFavoriteMovieNotFound.isDisplayed()
             }
         }
     }
@@ -375,154 +505,64 @@ class MainActivityTest : KoinTest {
                     swipeLeft()
                     isAtPage(1)
                 }
+
+                onView(withText(getResourceString(R.string.tv_show))).perform(click())
             }
 
-            onScreen<TvShowScreen> {
-                rvTvShow {
-                    with(onView(withId(R.id.rv_tv_show))) {
-                        check(matches(ViewMatchers.isDisplayed()))
-                        check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
-                        this@onScreen.progressBar.isGone()
-
-                        for (index in 0 until 40) {
-                            if (index == 19) {
-                                pageTvShow.postValue(SECOND_PAGE)
-                                while ((dataTvShow?.size as Int) < 40) {
+            for (sortIndex in apiSort.indices) {
+                onScreen<TvShowScreen> {
+                    rvTvShow {
+                        with(onView(withId(R.id.rv_tv_show))) {
+                            while (true) {
+                                try {
+                                    check(matches(ViewMatchers.isDisplayed()))
+                                    check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
+                                    this@onScreen.progressBar.isGone()
+                                    break
+                                } catch (e: AssertionFailedError) {
                                     idle(250)
                                 }
-
-                                Log.wtf("SIZE", dataTvShow?.size.toString())
-
-                                check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
                             }
 
-                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                                index))
-                            check(matches(atPosition(index,
-                                hasDescendant(withText(dataTvShow?.get(index)?.title)))))
-                        }
-                        pageTvShow.postValue(FIRST_PAGE)
-                    }
-                }
-            }
+                            for (index in 0 until 40) {
+                                if (index == 19) {
+                                    pageTvShow.postValue(SECOND_PAGE)
+                                    while ((dataTvShow?.size as Int) < 40) {
+                                        idle(250)
+                                    }
 
-            onScreen<TvShowScreen> {
-                openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-                onView(withText(getResourceString(R.string.menu_original_title))).perform(click())
-                    .also {
-                        sortTvShow.postValue(ORIGINAL_TITLE)
-                    }
-
-                while (dataTvShow == null) {
-                    idle(250)
-                }
-            }
-
-            onScreen<TvShowScreen> {
-                rvTvShow {
-                    with(onView(withId(R.id.rv_tv_show))) {
-                        check(matches(ViewMatchers.isDisplayed()))
-                        check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
-                        this@onScreen.progressBar.isGone()
-
-                        for (index in 0 until 40) {
-                            if (index == 19) {
-                                pageTvShow.postValue(SECOND_PAGE)
-                                while ((dataTvShow?.size as Int) < 40) {
-                                    idle(250)
+                                    check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
                                 }
 
-                                Log.wtf("SIZE", dataTvShow?.size.toString())
+                                perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
+                                    index))
 
-                                check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
-                            }
 
-                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                                index))
-                            check(matches(atPosition(index,
-                                hasDescendant(withText(dataTvShow?.get(index)?.title)))))
-                        }
-                        pageTvShow.postValue(FIRST_PAGE)
-                    }
-                }
-            }
-
-            onScreen<TvShowScreen> {
-                openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-                onView(withText(getResourceString(R.string.menu_score))).perform(click()).also {
-                    sortTvShow.postValue(SCORE)
-                }
-
-                while (dataTvShow == null) {
-                    idle(250)
-                }
-            }
-
-            onScreen<TvShowScreen> {
-                rvTvShow {
-                    with(onView(withId(R.id.rv_tv_show))) {
-                        check(matches(ViewMatchers.isDisplayed()))
-                        check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
-                        this@onScreen.progressBar.isGone()
-
-                        for (index in 0 until 40) {
-                            if (index == 19) {
-                                pageTvShow.postValue(SECOND_PAGE)
-                                while ((dataTvShow?.size as Int) < 40) {
-                                    idle(250)
+                                while (true) {
+                                    try {
+                                        check(matches(atPosition(index,
+                                            hasDescendant(withText(dataTvShow?.get(index)?.title)))))
+                                        break
+                                    } catch (e: AssertionFailedError) {
+                                        idle(250)
+                                    }
                                 }
-
-                                Log.wtf("SIZE", dataTvShow?.size.toString())
-
-                                check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
                             }
 
-                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                                index))
-                            check(matches(atPosition(index,
-                                hasDescendant(withText(dataTvShow?.get(index)?.title)))))
+                            pageTvShow.postValue(FIRST_PAGE)
                         }
-                        pageTvShow.postValue(FIRST_PAGE)
                     }
                 }
-            }
 
-            onScreen<TvShowScreen> {
-                openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-                onView(withText(getResourceString(R.string.menu_vote_count))).perform(click())
-                    .also {
-                        sortTvShow.postValue(VOTE_COUNT)
-                    }
-
-                while (dataTvShow == null) {
-                    idle(250)
-                }
-            }
-
-            onScreen<TvShowScreen> {
-                rvTvShow {
-                    with(onView(withId(R.id.rv_tv_show))) {
-                        check(matches(ViewMatchers.isDisplayed()))
-                        check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
-                        this@onScreen.progressBar.isGone()
-
-                        for (index in 0 until 40) {
-                            if (index == 19) {
-                                pageTvShow.postValue(SECOND_PAGE)
-                                while ((dataTvShow?.size as Int) < 40) {
-                                    idle(250)
-                                }
-
-                                Log.wtf("SIZE", dataTvShow?.size.toString())
-
-                                check(RecyclerViewTestUtil.hasSize(dataTvShow?.size as Int))
-                            }
-
-                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                                index))
-                            check(matches(atPosition(index,
-                                hasDescendant(withText(dataTvShow?.get(index)?.title)))))
+                onScreen<TvShowScreen> {
+                    openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+                    onView(withText(getResourceString(apiSortString[sortIndex]))).perform(click())
+                        .also {
+                            sortTvShow.postValue(apiSort[sortIndex])
                         }
+
+                    while (dataTvShow == null) {
+                        idle(250)
                     }
                 }
             }
@@ -531,7 +571,11 @@ class MainActivityTest : KoinTest {
 
     @Test
     fun loadDetailTvShow() {
+        testTag = "detail_tv_show"
+
         startTest(app) {
+            val tvShowDetail = dataTvShowDetail[0]
+
             onScreen<MainScreen> {
                 toolbar {
                     isDisplayed()
@@ -559,7 +603,7 @@ class MainActivityTest : KoinTest {
                     with(onView(withId(R.id.rv_tv_show))) {
                         this@onScreen.progressBar.isGone()
                         check(matches(atPosition(0,
-                            hasDescendant(withText(dataTvShowDetail?.title)))))
+                            hasDescendant(withText(tvShowDetail.title)))))
                         perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                             0,
                             ViewActions.click()))
@@ -570,7 +614,7 @@ class MainActivityTest : KoinTest {
             onScreen<MainScreen> {
                 toolbar {
                     isDisplayed()
-                    hasTitle(dataTvShowDetail?.title.toString())
+                    hasTitle(tvShowDetail.title)
                 }
             }
 
@@ -580,31 +624,31 @@ class MainActivityTest : KoinTest {
                 }
                 tvTitle {
                     isDisplayed()
-                    hasText(dataTvShowDetail?.title.toString())
+                    hasText(tvShowDetail.title)
                 }
                 tvDirector {
                     isDisplayed()
-                    hasText(dataTvShowDetail?.director.toString())
+                    hasText(tvShowDetail.director)
                 }
                 tvGenre {
                     isDisplayed()
-                    hasText(dataTvShowDetail?.genre.toString())
+                    hasText(tvShowDetail.genre)
                 }
                 tvQuote {
                     isDisplayed()
-                    hasText(dataTvShowDetail?.quote.toString())
+                    hasText(tvShowDetail.quote)
                 }
                 tvScore {
                     isDisplayed()
-                    hasText(dataTvShowDetail?.score.toString())
+                    hasText(tvShowDetail.score)
                 }
                 tvDate {
                     isDisplayed()
-                    hasText(dataTvShowDetail?.releaseDate.toString())
+                    hasText(tvShowDetail.releaseDate)
                 }
                 tvSynopsis {
                     isDisplayed()
-                    hasText(dataTvShowDetail?.synopsis.toString())
+                    hasText(tvShowDetail.synopsis)
                 }
                 imgPoster {
                     isDisplayed()
@@ -617,6 +661,217 @@ class MainActivityTest : KoinTest {
                     intended(hasAction(Intent.ACTION_CHOOSER))
                     intended(hasExtra(Intent.EXTRA_TITLE, getResourceString(R.string.share_title)))
                 }
+            }
+        }
+    }
+
+    @Test
+    fun loadFavoriteTvShow() {
+        testTag = "favorite_tv_show"
+
+        startTest(app) {
+            onScreen<MainScreen> {
+                toolbar {
+                    isDisplayed()
+                    hasTitle(R.string.app_name)
+                }
+            }
+
+            onScreen<HomeScreen> {
+                sortFavoriteTvShow.postValue(DEFAULT)
+
+                while (dataFavoriteTvShow == null) {
+                    idle(250)
+                }
+
+                onView(withId(R.id.menu_favorite)).perform(click())
+            }
+
+            onScreen<MainScreen> {
+                toolbar {
+                    isDisplayed()
+                    hasTitle(R.string.menu_favorite)
+                }
+            }
+
+            onScreen<FavoriteScreen> {
+                tabsFavorite {
+                    isDisplayed()
+                    isTabSelected(0)
+                    selectTab(1)
+                    isTabSelected(1)
+                }
+
+                viewPagerFavorite {
+                    isDisplayed()
+                    swipeLeft()
+                    isAtPage(1)
+                }
+
+                onView(withText(getResourceString(R.string.tv_show))).perform(click())
+
+                sortFavoriteTvShow.postValue(DEFAULT)
+
+                onView(withId(R.id.menu_delete_all)).perform(click())
+                onView(withText(R.string.dialog_confirm_yes)).perform(click())
+            }
+
+            onScreen<FavoriteTvShowScreen> {
+                progressBar.isGone()
+                tvFavoriteTvShowNotFound.isDisplayed()
+                rvFavoriteTvShow.isGone()
+                pressBack()
+            }
+
+            onScreen<HomeScreen> {
+                tabs {
+                    isDisplayed()
+                    isTabSelected(0)
+                    selectTab(1)
+                    isTabSelected(1)
+                }
+
+                viewPager {
+                    isDisplayed()
+                    swipeLeft()
+                    isAtPage(1)
+                }
+
+                onView(withText(getResourceString(R.string.tv_show))).perform(click())
+            }
+
+            for (index in 0 until 6) {
+                onScreen<TvShowScreen> {
+                    rvTvShow {
+                        with(onView(withId(R.id.rv_tv_show))) {
+                            this@onScreen.progressBar.isGone()
+                            perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
+                                index))
+                            perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                                index,
+                                ViewActions.click()))
+                        }
+                    }
+                }
+
+                onScreen<DetailScreen> {
+                    progressBar {
+                        isGone()
+                    }
+                    btnFavorite {
+                        click()
+                    }
+
+                    pressBack()
+                }
+            }
+
+            onScreen<HomeScreen> {
+                sortFavoriteTvShow.postValue(DEFAULT)
+
+                while (dataFavoriteTvShow == null) {
+                    idle(250)
+                }
+
+                onView(withId(R.id.menu_favorite)).perform(click())
+            }
+
+            onScreen<FavoriteScreen> {
+                tabsFavorite {
+                    isDisplayed()
+                    isTabSelected(0)
+                    selectTab(1)
+                    isTabSelected(1)
+                }
+
+                viewPagerFavorite {
+                    isDisplayed()
+                    swipeLeft()
+                    isAtPage(1)
+                }
+
+                onView(withText(getResourceString(R.string.tv_show))).perform(click())
+            }
+
+            onScreen<FavoriteTvShowScreen> {
+                progressBar.isGone()
+                rvFavoriteTvShow {
+                    isDisplayed()
+                    hasSize(dataFavoriteTvShow?.size as Int)
+                }
+            }
+
+            for (sortIndex in favoriteSort.indices) {
+                onScreen<FavoriteTvShowScreen> {
+                    openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+                    onView(withText(getResourceString(favoriteSortString[sortIndex]))).perform(click())
+                        .also {
+                            dataFavoriteTvShow = null
+                            sortFavoriteTvShow.postValue(favoriteSort[sortIndex])
+                        }
+
+                    while (dataFavoriteTvShow == null) {
+                        idle(250)
+                    }
+                }
+
+                onScreen<FavoriteTvShowScreen> {
+                    rvFavoriteTvShow {
+                        with(onView(withId(R.id.rv_favorite_tv_show))) {
+                            check(matches(ViewMatchers.isDisplayed()))
+                            check(RecyclerViewTestUtil.hasSize(dataFavoriteTvShow?.size as Int))
+
+                            for ((index, tvShow) in (dataFavoriteTvShow as PagedList<ShowEntity>).withIndex()) {
+                                perform(RecyclerViewActions
+                                    .scrollToPosition<RecyclerView.ViewHolder>(index))
+                                check(matches(atPosition(index,
+                                    hasDescendant(withText(tvShow.title)))))
+                            }
+                        }
+                    }
+                }
+            }
+
+            onScreen<FavoriteTvShowScreen> {
+                rvFavoriteTvShow {
+                    with(onView(withId(R.id.rv_favorite_tv_show))) {
+                        this@onScreen.progressBar.isGone()
+                        perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
+                            0))
+                        check(matches(atPosition(0,
+                            hasDescendant(withText(dataFavoriteTvShow?.get(0)?.title)))))
+                        perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                            0,
+                            ViewActions.click()))
+                    }
+                }
+            }
+
+            onScreen<DetailScreen> {
+                progressBar.isGone()
+                btnFavorite.click()
+                pressBack()
+            }
+
+            onScreen<FavoriteTvShowScreen> {
+                progressBar.isGone()
+                rvFavoriteTvShow {
+                    isDisplayed()
+                    hasSize(dataFavoriteTvShow?.size as Int)
+                }
+            }
+
+            onScreen<FavoriteScreen> {
+                sortFavoriteTvShow.postValue(DEFAULT)
+
+                onView(withId(R.id.menu_delete_all)).perform(click())
+                onView(withText(R.string.dialog_confirm_yes)).perform(click())
+            }
+
+            onScreen<FavoriteTvShowScreen> {
+                progressBar.isGone()
+                rvFavoriteTvShow.isGone()
+                tvFavoriteTvShowNotFound.isDisplayed()
             }
         }
     }
@@ -640,8 +895,6 @@ class MainActivityTest : KoinTest {
             sortMovie.postValue(POPULARITY)
             sortTvShow.postValue(POPULARITY)
 
-            movieLiveData = mFakeShowRepository.getAllMovies()
-            tvShowLiveData = mFakeShowRepository.getAllTvShows()
             activityRule.scenario.onActivity {
                 Transformations.switchMap(sortMovie) { sort ->
                     Transformations.switchMap(pageMovie) { page ->
@@ -651,7 +904,6 @@ class MainActivityTest : KoinTest {
                     when (movie.status) {
                         Status.SUCCESS -> {
                             dataMovie = movie.data as PagedList<ShowEntity>
-                            movieId = movie.data?.get(0)?.showId
                         }
                         else -> {
                         }
@@ -665,7 +917,6 @@ class MainActivityTest : KoinTest {
                     when (tvShow.status) {
                         Status.SUCCESS -> {
                             dataTvShow = tvShow.data as PagedList<ShowEntity>
-                            tvShowId = tvShow.data?.get(0)?.showId
                         }
                         else -> {
                         }
@@ -677,36 +928,52 @@ class MainActivityTest : KoinTest {
                 idle(250)
             }
 
-            val movieDetails = mFakeShowRepository.getMovieDetail(movieId.toString())
-            val tvShowDetails = mFakeShowRepository.getTvShowDetail(tvShowId.toString())
-
-            activityRule.scenario.onActivity {
-                movieDetails.observe(it, { movie ->
-                    when (movie.status) {
-                        Status.SUCCESS -> {
-                            dataMovieDetail = movie.data
-                        }
-                        else -> {
-                        }
-                    }
-                })
-                tvShowDetails.observe(it, { tvShow ->
-                    when (tvShow.status) {
-                        Status.SUCCESS -> {
-                            dataTvShowDetail = tvShow.data
-                        }
-                        else -> {
-                        }
-                    }
-                })
+            for (index in 0 until 6) {
+                movieId.add(dataMovie?.get(index)?.showId.toString())
+                tvShowId.add(dataTvShow?.get(index)?.showId.toString())
             }
 
-            while (true) {
-                if (dataMovieDetail != null && dataTvShowDetail != null)
-                    break
+            if (testTag != "null") {
+                for (index in 0 until movieId.size) {
+                    val movieDetails = mFakeShowRepository.getMovieDetail(movieId[index])
+                    val tvShowDetails = mFakeShowRepository.getTvShowDetail(tvShowId[index])
 
-                idle(250)
+                    activityRule.scenario.onActivity {
+                        movieDetails.observe(it, { movie ->
+                            when (movie.status) {
+                                Status.SUCCESS -> {
+                                    dataMovieDetail.add(movie.data as ShowEntity)
+                                }
+                                else -> {
+                                }
+                            }
+                        })
+                        tvShowDetails.observe(it, { tvShow ->
+                            when (tvShow.status) {
+                                Status.SUCCESS -> {
+                                    dataTvShowDetail.add(tvShow.data as ShowEntity)
+                                }
+                                else -> {
+                                }
+                            }
+                        })
+                    }
+                }
+
+                while (dataMovieDetail.size < 6 && dataTvShowDetail.size < 6) {
+                    idle(250)
+                }
+
+                activityRule.scenario.onActivity {
+                    Transformations.switchMap(sortFavoriteMovie) { sort ->
+                        mFakeShowRepository.getFavoritedMovies(sort)
+                    }.observe(it, { movie -> dataFavoriteMovie = movie })
+                    Transformations.switchMap(sortFavoriteTvShow) { sort ->
+                        mFakeShowRepository.getFavoritedTvShows(sort)
+                    }.observe(it, { tvShow -> dataFavoriteTvShow = tvShow })
+                }
             }
+
 
             block()
         }

@@ -11,7 +11,7 @@ data class MovieDetailResponse(
     val overview: String,
 
     @field:SerializedName("release_date")
-    val releaseDate: String,
+    val releaseDate: String?,
 
     @field:SerializedName("genres")
     val genres: List<GenresItem>,
@@ -50,7 +50,7 @@ data class TvShowDetailResponse(
     val backdropPath: String,
 
     @field:SerializedName("first_air_date")
-    val firstAirDate: String,
+    val firstAirDate: String?,
 
     @field:SerializedName("overview")
     val overview: String,

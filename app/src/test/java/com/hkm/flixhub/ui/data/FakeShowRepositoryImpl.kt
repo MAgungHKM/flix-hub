@@ -142,7 +142,8 @@ class FakeShowRepositoryImpl constructor(
                     "https://image.tmdb.org/t/p/w1280${data.backdropPath}" else posterPath
                 val quote =
                     if (data.tagline != "") data.tagline else "null"
-                val date = Formatter.dateFormatter(data.releaseDate)
+                val date =
+                    if (data.releaseDate != null) Formatter.dateFormatter(data.releaseDate.toString()) else "null"
 
                 lateinit var director: String
                 val crewList = data.crew
@@ -200,7 +201,8 @@ class FakeShowRepositoryImpl constructor(
                     "https://image.tmdb.org/t/p/w1280${data.backdropPath}" else posterPath
                 val quote =
                     if (data.tagline != "") data.tagline else "null"
-                val date = Formatter.dateFormatter(data.firstAirDate)
+                val date =
+                    if (data.firstAirDate != null) Formatter.dateFormatter(data.firstAirDate.toString()) else "null"
 
                 val creators = data.createdBy
                 val director = if (!creators.isNullOrEmpty()) creators[0].name else "null"
